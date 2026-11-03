@@ -62,7 +62,7 @@ const hasPdf = existsSync(`public${pdf}`);
           <div class="entry">
             <p class="row">
               <span><strong>{e.title}</strong>{e.meta && <> | {e.meta}</>}</span>
-              <span>{e.link && <><a class="link" href={abs(e.link.href)}>{shown(e.link.href)}</a> | </>}{e.when}</span>
+              <span>{e.link && <><a class="link" href={abs(e.link.href)}>{e.link.href}</a> | </>}{e.when}</span>
             </p>
             <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
           </div>

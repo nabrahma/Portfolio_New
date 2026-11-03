@@ -2,10 +2,11 @@
 // Run through `npm run resume` (build → print → build again so dist/ carries the PDF).
 // The PDF is real text in one column, so ATS parsers and "select all → paste" read it in order.
 import { spawn, execFileSync } from 'node:child_process';
-import { existsSync, statSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, statSync, mkdtempSync, rmSync, copyFileSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { tmpdir } from 'node:os';
 
-const OUT = resolve('public/Nabaskar-Brahma-UX-Resume.pdf');
+const OUT = resolve(process.env.RESUME_OUT ?? 'public/Nabaskar-Brahma-UX-Resume.pdf');
 const PORT = 4329;
 
 const browsers = [
@@ -29,13 +30,23 @@ const ready = new Promise((res, rej) => {
   preview.stdout.on('data', (d) => { if (String(d).includes(String(PORT))) { clearTimeout(t); res(); } });
 });
 
+// a throwaway profile, so the browser can never print a cached copy of an older build
+const profile = mkdtempSync(join(tmpdir(), 'resume-pdf-'));
+const tmp = join(profile, 'resume.pdf');
 try {
   await ready;
   execFileSync(browser, [
     '--headless=new', '--disable-gpu', '--no-pdf-header-footer', '--run-all-compositor-stages-before-draw',
-    '--virtual-time-budget=6000', `--print-to-pdf=${OUT}`, `http://127.0.0.1:${PORT}/resume/`,
+    `--user-data-dir=${profile}`, '--disk-cache-size=1',
+    '--virtual-time-budget=6000', `--print-to-pdf=${tmp}`, `http://127.0.0.1:${PORT}/resume/?v=${Date.now()}`,
   ], { stdio: 'ignore' });
+  if (!existsSync(tmp)) throw new Error('the browser did not write a PDF');
+  // print to a temp file, then copy: a PDF left open in a viewer can't be overwritten in place,
+  // and the browser fails silently when that happens
+  try { copyFileSync(tmp, OUT); }
+  catch { throw new Error(`could not replace ${OUT}. Is it open in a PDF viewer or editor tab? Close it and run again.`); }
   console.log(`résumé → ${OUT} (${Math.round(statSync(OUT).size / 1024)} KB)`);
 } finally {
   preview.kill();
+  try { rmSync(profile, { recursive: true, force: true }); } catch {}
 }

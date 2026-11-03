@@ -23,7 +23,7 @@ Deploy `dist/` anywhere static: Vercel, Netlify, Cloudflare Pages or GitHub Page
 | --- | --- |
 | `src/data/site.ts` | Done: email, socials, education, résumé link. |
 | `.env` | Done locally. Add `PUBLIC_WEB3FORMS_KEY` on your host too (see below). |
-| `astro.config.mjs` | `site:` your real domain, then run `npm run resume` so the résumé's portfolio links point at it. |
+| `astro.config.mjs` | Done: `site` is https://portfolio-nabaskarbrahma.vercel.app. Change it if the domain changes, then run `npm run resume`. |
 | `src/pages/work/margin.astro`, `ruko.astro`, `berth.astro` | Done: `FIGMA` holds each prototype link. Check that the files are set to "Anyone with the link can view". |
 | `src/data/projects.ts`, `src/pages/work/thriftup.astro` | Done: ThriftUp is 2024, solo. |
 | What if | Optional: replace `public/video/*-preview.webm` with Figma screen recordings. |
