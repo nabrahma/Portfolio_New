@@ -1,0 +1,140 @@
+---
+// The résumé as a plain document: readable by people, parsers and ATS alike.
+// Printed to PDF by `npm run resume` (scripts/resume-pdf.mjs). Deliberately not inside the
+// NB—OS chrome: one column, live text, standard headings, links written out in full.
+import { existsSync } from 'node:fs';
+import { site } from '../data/site';
+import { resume, type Entry } from '../data/resume';
+
+const base = (import.meta.env.SITE ?? '').replace(/\/$/, '');
+const placeholder = !base || base.includes('example.com');
+const host = placeholder ? 'your-portfolio-url' : base.replace(/^https?:\/\//, '');
+const abs = (href: string) => (href.startsWith('http') ? href : `${base}${href}`);
+const shown = (href: string) => (href.startsWith('http') ? href.replace(/^https?:\/\/(www\.)?/, '') : `${host}${href}`);
+const linkedin = site.socials.find((s) => s.label === 'LinkedIn')?.href ?? '';
+const behance = site.socials.find((s) => s.label === 'Behance')?.href ?? '';
+const artstation = site.socials.find((s) => s.label === 'ArtStation')?.href ?? '';
+const pdf = '/Nabaskar-Brahma-UX-Resume.pdf';
+// the PDF is generated locally (npm run resume) and kept out of git; without it, print this page
+const hasPdf = existsSync(`public${pdf}`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{site.name} — Résumé</title>
+    <meta name="description" content={`${site.name}: UX designer résumé. ${resume.summary}`} />
+    <link rel="icon" href="/favicon.svg" />
+  </head>
+  <body>
+    <nav class="bar" aria-label="Résumé actions">
+      <a href="/">← NB—OS</a>
+      {hasPdf ? <a href={pdf} download>Download PDF ↓</a> : <button type="button" onclick="window.print()">Print / Save as PDF ↓</button>}
+    </nav>
+
+    <main class="cv">
+      <header>
+        <h1>{site.name}</h1>
+        <p class="role">{resume.headline}</p>
+        <p class="contact">
+          {resume.location} | <a href={`mailto:${site.email}`}>{site.email}</a> | Portfolio: <a href={base || '/'}>{host}</a>
+          <br />
+          LinkedIn: <a href={linkedin}>{shown(linkedin)}</a> | Behance: <a href={behance}>{shown(behance)}</a> | 3D: <a href={artstation}>{shown(artstation)}</a>
+        </p>
+        <p class="summary">{resume.summary}</p>
+      </header>
+
+      <section>
+        <h2>Education</h2>
+        {resume.education.map((e: Entry) => (
+          <div class="entry">
+            <p class="row"><strong>{e.org}</strong><span>{e.when}</span></p>
+            <p>{e.title}</p>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>Projects</h2>
+        {resume.projects.map((e: Entry) => (
+          <div class="entry">
+            <p class="row">
+              <span><strong>{e.title}</strong>{e.meta && <> | {e.meta}</>}</span>
+              <span>{e.link && <><a class="link" href={abs(e.link.href)}>{shown(e.link.href)}</a> | </>}{e.when}</span>
+            </p>
+            <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>Experience</h2>
+        {resume.experience.map((e: Entry) => (
+          <div class="entry">
+            <p class="row">
+              <span><strong>{e.title}</strong>{e.org && <>, {e.org}</>}{e.meta && <> | {e.meta}</>}</span>
+              <span>{e.when}</span>
+            </p>
+            <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>Skills</h2>
+        {resume.skills.map((s) => <p class="skill"><strong>{s.k}:</strong> {s.v}</p>)}
+      </section>
+
+      <section>
+        <h2>Achievements and Leadership</h2>
+        <ul>{resume.achievements.map((a) => <li>{a}</li>)}</ul>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  @page { size: A4; margin: 11mm 13mm; }
+  :root { --ink: #111; --dim: #444; --rule: #bbb; --accent: #00843c; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #e9e8e3; }
+  body {
+    /* a system TrueType font embeds as real, mapped text (web fonts came out as Type3 glyphs) */
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    font-variant-ligatures: none; /* parsers read "fi" as one glyph otherwise */
+    font-feature-settings: 'liga' 0, 'clig' 0;
+    color: var(--ink); font-size: 9.6pt; line-height: 1.38;
+  }
+  a { color: inherit; text-decoration: none; }
+  .bar { position: sticky; top: 0; display: flex; justify-content: space-between; max-width: 210mm; margin: 0 auto; padding: 14px 4px; font: 500 12px/1 ui-monospace, Consolas, monospace; text-transform: uppercase; letter-spacing: 0.04em; }
+  .bar button { font: inherit; text-transform: inherit; letter-spacing: inherit; background: none; border: 0; color: inherit; cursor: pointer; }
+  .bar a:hover, .bar button:hover { color: var(--accent); }
+  .cv { width: 210mm; min-height: 297mm; margin: 0 auto 48px; padding: 11mm 13mm; background: #fff; box-shadow: 0 20px 60px -30px rgb(0 0 0 / 0.35); }
+  header { margin-bottom: 7pt; }
+  h1 { font-size: 19pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+  .role { font-size: 10.5pt; font-weight: 500; color: var(--accent); margin-top: 2pt; }
+  .contact { font-size: 8.8pt; color: var(--dim); margin-top: 4pt; line-height: 1.5; }
+  .contact a { color: var(--ink); }
+  .summary { margin-top: 5pt; }
+  h2 { font-size: 9.6pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0; border-bottom: 0.75pt solid var(--rule); padding-bottom: 1.5pt; margin: 8pt 0 4pt; }
+  section > p { color: var(--ink); }
+  .entry { margin-bottom: 4.5pt; break-inside: avoid; }
+  .row { display: flex; justify-content: space-between; gap: 12pt; }
+  .row > span:last-child { white-space: nowrap; color: var(--dim); }
+  .link { color: var(--accent); }
+  ul { padding-left: 11pt; margin-top: 1.5pt; }
+  li { margin-bottom: 1.2pt; }
+  li::marker { color: var(--dim); }
+  .skill { margin-bottom: 1.5pt; }
+  @media print {
+    html { background: #fff; }
+    .bar { display: none; }
+    .cv { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
+  }
+  @media screen and (max-width: 820px) {
+    .cv { width: auto; min-height: 0; margin: 0 12px 32px; padding: 22px 18px; }
+    .row { flex-direction: column; gap: 0; }
+  }
+</style>

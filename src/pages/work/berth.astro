@@ -1,0 +1,165 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Sec from '../../components/case/Sec.astro';
+import Shot from '../../components/case/Shot.astro';
+import Quote from '../../components/case/Quote.astro';
+import Stats from '../../components/case/Stats.astro';
+import Bars from '../../components/case/Bars.astro';
+import s1 from '../../assets/work/berth/screen-1-add-journey.png';
+import s2 from '../../assets/work/berth/screen-2-now-station.png';
+import s3 from '../../assets/work/berth/screen-3-now-onboard-offline.png';
+import s4a from '../../assets/work/berth/screen-4a-wakeup-set.png';
+import s4b from '../../assets/work/berth/screen-4b-wakeup-ringing.png';
+import s5 from '../../assets/work/berth/screen-5-lock-screen.png';
+import s6 from '../../assets/work/berth/screen-6-widgets.png';
+import s7 from '../../assets/work/berth/screen-7-low-battery.png';
+import method from '../../assets/work/berth/g-method-map.png';
+import stress from '../../assets/work/berth/g-stress-overlay.png';
+import journey from '../../assets/work/berth/g-journey-map.png';
+import displays from '../../assets/work/berth/g-station-displays.png';
+import i1 from '../../assets/work/berth/g-insight-1-coach.png';
+import i2 from '../../assets/work/berth/g-insight-2-three-answers.png';
+import i3 from '../../assets/work/berth/g-insight-3-alarm.png';
+import i4 from '../../assets/work/berth/g-insight-4-creep.png';
+import wa from '../../assets/work/berth/g-wireframe-a-dashboard.png';
+import wb from '../../assets/work/berth/g-wireframe-b-one-answer.png';
+import beforeAfter from '../../assets/work/berth/g-before-after-phones.png';
+import flow from '../../assets/work/berth/g-flow.png';
+
+const FIGMA = 'https://www.figma.com/proto/AIEybK57ffpi1KFmHkZ1oM/Berth-%E2%80%94-Prototype?node-id=0-1&t=5Pokmrs3kSUXejRP-1';
+const B = '#DDE5F5', P = '#EEF1F7';
+const toc = [
+  { id: 'tldr', label: 'TL;DR' },
+  { id: 'method', label: 'How I ran it' },
+  { id: 'survey', label: 'Survey' },
+  { id: 'stress', label: 'Stress lines' },
+  { id: 'station', label: 'At the station' },
+  { id: 'wrong', label: 'What turned out wrong' },
+  { id: 'insights', label: 'Insights' },
+  { id: 'principles', label: 'Principles' },
+  { id: 'design', label: 'Final design' },
+  { id: 'learned', label: 'What I learned' },
+];
+---
+
+<CaseStudy
+  slug="berth"
+  headline="The one answer you need right now: where to stand, and when to wake."
+  subhead="Berth is a companion for long-distance train travellers in India who get on or off at a busy intermediate station, often at night, with luggage, a child or older family."
+  meta={[
+    { k: 'Role', v: 'Solo: study plan, analysis, product design' },
+    { k: 'Methods', v: 'Survey · interviews · station observation · diary · stress lines' },
+    { k: 'Platform', v: 'Android: app, lock screen, widgets' },
+    { k: 'Timeline', v: '2026' },
+  ]}
+  links={[
+    { label: 'Play the prototype', href: FIGMA, solid: true },
+    { label: 'Case study PDF', href: '/pdf/berth-case-study.pdf' },
+  ]}
+  note="Simulated study data: I framed the problem, planned the study and did the analysis; the responses were simulated with AI from that plan."
+  toc={toc}
+  hero={s2}
+  heroAlt="Berth station screen: platform 3 in signage-size type, changed from 2, with the source and age of the number, and where to stand: 9th coach from the engine."
+>
+  <Sec id="tldr" n="01" label="TL;DR" title="Briefed as an on-board companion. The pain was at both ends of the trip.">
+    <div class="cs-cards">
+      <div class="cs-card" data-reveal><span class="k">The problem</span><p>On the platform, travellers don’t know where their coach stops. On the approach to a pre-dawn stop, alarms follow the timetable while the train doesn’t.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">What I did</span><p>Planned a mixed-methods study: a survey (n = 116), 8 interviews with stress lines, 2 hours of station observation and a 5-person diary. Then coded and analysed every file.</p></div>
+      <div class="cs-card cs-card--ink" data-reveal data-reveal-delay="160"><span class="k">What I designed</span><p>One answer in signage-size type, with its source and age, on the lock screen, a widget and a position-based alarm.</p></div>
+    </div>
+    <Quote cite="P3, interview">Tell me where to stand. Honestly that’s it.</Quote>
+  </Sec>
+
+  <Sec id="method" n="02" label="How I ran it" title="Five methods, each checking the others.">
+    <Shot src={method} kind="graphic" alt="Method map: 116 survey answers, 8 interviews of 38 to 45 minutes with stress lines, 2 hours at Gwalior Junction and 5 travel diaries feed into a synthesis of 4 insights and 3 principles." />
+    <div class="cs-callout"><span class="k">About the data</span><p>I framed the problem and wrote the plan: the survey, the interview guide, the stress-line exercise, the station protocol and the diary prompts. The responses were simulated with AI from that plan. I then cleaned, coded and analysed them, and every count on this page traces to that dataset.</p></div>
+  </Sec>
+
+  <Sec id="survey" n="03" label="Survey · n = 116" title="70 of 116 check the train’s status six or more times a trip.">
+    <Stats items={[
+      { n: '70', l: 'of 116 check status 6+ times per trip, across 3.3 sources each.' },
+      { n: '51', l: 'of 116 have missed, or nearly missed, their stop or train.' },
+      { n: '95', l: 'of 116 say battery worry changes how they use their phone.' },
+    ]} />
+    <Bars label="Most stressful part of the trip, n = 116" rows={[
+      { l: 'Approaching your stop', v: 32, tone: 'hl' },
+      { l: 'At the station', v: 29, tone: 'hl' },
+      { l: 'Before leaving', v: 19 },
+      { l: 'Arrival', v: 13 },
+      { l: 'Boarding', v: 12 },
+      { l: 'On board', v: 11, tone: 'acc' },
+    ]} />
+    <p class="t-mono t-faint">Most stressful part of the trip. On board, the phase Berth was briefed for, came last.</p>
+  </Sec>
+
+  <Sec id="stress" n="04" label="Stress lines" title="None of the 8 stress lines peaks on board.">
+    <Shot src={stress} kind="graphic" alt="Eight stress lines over six trip phases with the average: 2.88 before leaving, 3.63 at the station, 3.75 boarding, 2.50 on board, 3.50 approaching, 2.75 arrival. Peaks: before leaving P6; station P2 and P3; boarding P4 and P8; on board none; approaching P1, P5 and P7." />
+    <div class="cs-prose">
+      <p><b>4 of 8 peak at the station or boarding, 3 on the approach, none on board.</b> Both people with a pre-dawn intermediate stop rate the approach a 5. Those whose stop comes in daylight, or is the last one, rate it a 2.</p>
+    </div>
+    <Shot src={journey} kind="graphic" title="Journey map" alt="Journey map across six phases with what travellers want, what they do today, average stress and the evidence behind each." />
+  </Sec>
+
+  <Sec id="station" n="05" label="Station observation" title="The display shows one place. The coach stops at another.">
+    <Stats items={[
+      { n: '85', l: 'people asked someone where a coach stops, in 2 hours.' },
+      { n: '3 of 4', l: 'trains watched closely stopped 1 to 1.5 coaches off their marker.' },
+      { n: '220', l: 'phone uses with the other hand full: a bag, a trolley, a child.' },
+    ]} />
+    <Shot src={displays} kind="graphic" panel="#E9E7E1" title="Three coach displays, one evening" caption="PF 1 worked. PF 2 showed another train for about 25 minutes. PF 3 stayed blank until 15 minutes before arrival." alt="Three coach-position displays: PF 1 working, PF 2 showing another train for about 25 minutes, PF 3 blank until about 15 minutes before arrival." />
+  </Sec>
+
+  <Sec id="wrong" n="06" label="What turned out wrong" title="Not missing information. Conflicting, stale information." band>
+    <div class="cs-prose">
+      <p>Berth was briefed as an <strong>offline-first companion for the long on-board stretch</strong>. The research says on board is the calmest phase: average stress <strong>2.50</strong>, the lowest, and only 11 of 116 chose it.</p>
+      <p>The pain sits at the two ends: <strong>the platform</strong> and <strong>the approach to the stop</strong>. And the data already exists. It just disagrees across board, app and people, and nothing says which one is current.</p>
+    </div>
+    <div class="cs-card" data-reveal><span class="k">What changed</span><h3>From “a trip tracker” to “the one thing you need right now”.</h3><p>Offline still matters, but at night on the approach, not mid-journey.</p></div>
+  </Sec>
+
+  <Sec id="insights" n="07" label="Insights" title="Four insights, each from two or more sources.">
+    <div class="shot-row shot-row--2">
+      <Shot src={i1} kind="graphic" title="1 · The display says one place; the coach stops at another" caption="People fall back on vendors and coolies." alt="Diagram: the display says stand here, but B2 stopped 1 to 1.5 coaches further along. Seen on 3 of 4 trains watched closely." />
+      <Shot src={i2} kind="graphic" title="2 · Three sources, no single truth" caption="People trust a number only when two sources agree, and nothing shows how old it is." alt="Three phones after a platform change showing PF 2, PF 3 and PF dash, each with no source and no time." />
+      <Shot src={i3} kind="graphic" title="3 · Alarms follow the timetable; trains don’t" caption="Intermediate-stop travellers stay awake instead." alt="P1’s last trip home: alarms at 2:55, 4:35 and 4:50 set by the timetable, awake and checking every 15 to 20 minutes, and the train arrived at 6:05." />
+      <Shot src={i4} kind="graphic" title="4 · An honest early estimate beats a precise late one" caption="Because someone else acts on it." alt="What the app said through P5’s night: 30 minutes late, then 1 hour, then 2 hours, and it reached 4 hours late." />
+    </div>
+  </Sec>
+
+  <Sec id="principles" n="08" label="Design principles" title="Three rules, then one answer per moment.">
+    <div class="cs-cards">
+      <div class="cs-card cs-card--ink" data-reveal><span class="k">Insight 2</span><h3>Every number shows its source and its age.</h3><p>“PF 3 · board and NTES agree · 2 min ago”</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">Insights 3 and 4</span><h3>Run on the train’s real position, and say it early.</h3><p>Alarms, ETAs and lead times follow where the train is, shown as an honest range.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="160"><span class="k">Observation</span><h3>Readable at arm’s length, with one hand, in plain words.</h3><p>Signage-size numbers, no codes without meaning, Hindi station names.</p></div>
+    </div>
+    <div class="shot-row shot-row--2">
+      <Shot src={wa} kind="graphic" panel={P} title="A · Dashboard" caption="Everything at once. Rejected: nothing reads at arm’s length." alt="Grey wireframe of a dashboard with tiles for platform, coach, delay, arrival, PNR and a map." />
+      <Shot src={wb} kind="graphic" panel={B} title="B · One answer (chosen)" caption="One number per moment, big enough to read on a crowded platform." alt="Grey wireframe with one answer: a huge platform number and a coach-position strip." />
+    </div>
+  </Sec>
+
+  <Sec id="design" n="09" label="Final design" title="The same answer on every surface you can reach with one hand.">
+    <div class="shot-row">
+      <Shot src={s1} panel={P} title="Add a journey" caption="Paste a PNR or a ticket SMS; saved for offline." alt="Add a journey screen with a PNR field, the journey Gwalior to Prayagraj, coach B2 seat 33 lower, and a Set alarm button." />
+      <Shot src={s2} panel={B} title="At the station" caption="The platform, its source and age, and where to stand." alt="Station screen: platform 3, changed from 2, announcement and NTES agree, and where to stand: 9th coach from the engine." />
+      <Shot src={s3} panel={P} title="On board, offline" caption="An honest range, not a fake-precise time, with how old the last update is." alt="On-board screen, offline and showing an estimate: you reach Prayagraj between 5:55 and 6:15, about 55 minutes late, last live update 12 minutes ago, with the train’s position between stations and Wake-up on." />
+      <Shot src={s4a} panel={B} title="Wake-up by position" caption="Rings by where the train is, not the timetable, with fallbacks if things go wrong." alt="Wake-up alarm: wake me 40 minutes before Prayagraj Jn. Rings by where the train is, not by the timetable. Fallbacks for no GPS, phone on silent and battery below 15%. Set alarm, rings around 5:25." />
+      <Shot src={s4b} panel="#1E3A8A" title="Ringing" caption="Slide to dismiss; the stop and time left in huge type." alt="Wake-up alarm ringing: Prayagraj in 40 minutes, slide to stop." />
+      <Shot src={s7} panel={P} title="Low battery" caption="At 8%, it keeps only the next stop, your stop, your coach and the alarm." alt="Low-power mode at 8% battery on black: next stop Fatehpur in about 50 minutes, your stop Prayagraj around 6:05, about 55 minutes late, coach B2 21 lower, alarm still on 40 minutes before." />
+    </div>
+    <div class="shot-row shot-row--2">
+      <Shot src={s5} panel="#1E3A8A" title="Lock screen" caption="No unlocking with one hand full." alt="Lock screen with a live update: platform 3, changed from 2, B2 is the 9th coach from the engine, arrives 20:45, 25 minutes late." />
+      <Shot src={s6} panel={B} title="Widgets" caption="The answer sits on the home screen." alt="Home-screen widgets showing platform 3 with the coach, and 40 minutes to Prayagraj." />
+    </div>
+    <Shot src={flow} kind="graphic" title="One flow, four surfaces" alt="Flow from adding a journey to the Now view, which feeds the lock-screen live update, home-screen widget, wake-up alarm and low-power mode." />
+    <Shot src={beforeAfter} kind="graphic" title="Before and after the research" alt="Before: the first version of the station screen. After: the research-driven version with four numbered changes: a change is a state, every number names its source and age, lead time not just lateness, and where to stand with an honest warning." />
+  </Sec>
+
+  <Sec id="learned" n="10" label="What I learned" title="Map stress first. Design for trust. Know where simulation stops." band>
+    <div class="cs-cards">
+      <div class="cs-card" data-reveal><span class="k">01</span><h3>Map stress before features.</h3><p>The brief pointed at the calmest part of the trip. Stress lines and the phase question moved the whole product to the two ends.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">02</span><h3>Design for trust, not just data.</h3><p>The information existed. What was missing was a reason to believe one number over another: its source and its age.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="160"><span class="k">03</span><h3>Simulation has a ceiling.</h3><p>Simulated responses let me practise the whole pipeline, from plan to coding to design. They can’t surprise me the way real travellers would.</p></div>
+    </div>
+  </Sec>
+</CaseStudy>

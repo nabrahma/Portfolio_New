@@ -1,0 +1,176 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Sec from '../../components/case/Sec.astro';
+import Shot from '../../components/case/Shot.astro';
+import Flipbook from '../../components/case/Flipbook.astro';
+import cover from '../../assets/work/what-if/stack-shot-1600x1200.png';
+import stackCards from '../../assets/work/what-if/stack-components-card.png';
+import insidePip from '../../assets/work/what-if/inside-components-pip.png';
+import tankLevels from '../../assets/work/what-if/tank-components-tank.png';
+import a1 from '../../assets/work/what-if/stack/a-01-stack.png';
+import a2 from '../../assets/work/what-if/stack/a-02-fan-out.png';
+import a3 from '../../assets/work/what-if/stack/a-03-card-open-daily.png';
+import a4 from '../../assets/work/what-if/stack/a-04-card-back-daily.png';
+import b1 from '../../assets/work/what-if/inside/b-01-check-in-joyful.png';
+import b2 from '../../assets/work/what-if/inside/b-02-check-in-calm.png';
+import b3 from '../../assets/work/what-if/inside/b-03-check-in-meh.png';
+import b4 from '../../assets/work/what-if/inside/b-04-check-in-low.png';
+import b5 from '../../assets/work/what-if/inside/b-05-check-in-grumpy.png';
+import b6 from '../../assets/work/what-if/inside/b-06-week-calm.png';
+import c0 from '../../assets/work/what-if/tank/c-01-tank-0-of-8.png';
+import c2 from '../../assets/work/what-if/tank/c-01-tank-2-of-8.png';
+import c4 from '../../assets/work/what-if/tank/c-01-tank-4-of-8.png';
+import c6 from '../../assets/work/what-if/tank/c-01-tank-6-of-8.png';
+import c7 from '../../assets/work/what-if/tank/c-01-tank-7-of-8.png';
+import c8 from '../../assets/work/what-if/tank/c-01-tank-8-of-8.png';
+import cg from '../../assets/work/what-if/tank/c-02-goal.png';
+
+const proto = {
+  stack: 'https://www.figma.com/proto/wwWVrvdBu9581FYSH5vWuD/?node-id=39-4271&starting-point-node-id=39%3A4271&scaling=scale-down&content-scaling=fixed&hide-ui=1',
+  inside: 'https://www.figma.com/proto/T0X1bbDSKax3y9wDgTa1l2/?node-id=28-1474&starting-point-node-id=28%3A1474&scaling=scale-down&content-scaling=fixed&hide-ui=1',
+  tank: 'https://www.figma.com/proto/WJrqYeJonXeKxTSgfSW88S/?node-id=23-1687&starting-point-node-id=23%3A1687&scaling=scale-down&content-scaling=fixed&hide-ui=1',
+};
+const embed = (u: string) => `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(u + '&hotspot-hints=0')}`;
+const toc = [
+  { id: 'idea', label: 'The idea' },
+  { id: 'stack', label: '01 · Stack' },
+  { id: 'inside', label: '02 · Inside' },
+  { id: 'tank', label: '03 · Tank' },
+  { id: 'springs', label: 'Spring reference' },
+];
+const springs = [
+  ['Stack fan out / collapse', '1 / 170 / 20'], ['Card lift', '1 / 260 / 22'], ['Settle back', '1 / 220 / 28'],
+  ['Pip mood morph', '1 / 300 / 20'], ['Pip save to week', '1 / 170 / 22'], ['Pip grow back', '1 / 200 / 20'],
+  ['Water rise', '1 / 140 / 15'], ['Finn’s leap', '1 / 180 / 14'], ['Drain', '1 / 120 / 20'],
+  ['Card flip', '140 ms ease-in → 220 ms ease-out'], ['Pip blink', '120 ms, every 2.8 s'],
+];
+---
+
+<CaseStudy
+  slug="what-if"
+  headline="Three tiny prototypes. One gesture each, tuned until it feels physical."
+  subhead="Each concept asks one “What if…?” question about an everyday app, and answers it with a single native Figma transition on a tuned spring. No video, no fake transitions."
+  meta={[
+    { k: 'Type', v: 'Personal, exploratory interaction design' },
+    { k: 'Role', v: 'Interaction, visual design, prototyping' },
+    { k: 'Device', v: 'iPhone 16 · 393 × 852' },
+    { k: 'Tools', v: 'Figma: Smart Animate, interactive components, variables, springs' },
+  ]}
+  links={[
+    { label: 'Try Stack live', href: proto.stack, solid: true },
+    { label: 'Inside', href: proto.inside },
+    { label: 'Tank', href: proto.tank },
+  ]}
+  toc={toc}
+  hero={cover}
+  heroKind="wide"
+  heroAlt="Three phone screens: a stacked wallet, the cards fanned out, and the orange Daily card pulled out with its balance and recent payments."
+>
+  <Sec id="idea" n="00" label="The idea" title="One gesture, one spring.">
+    <div class="cs-prose">
+      <p>Every move is a real, native Figma prototype. Each layer keeps the same name on every screen, so Smart Animate moves the same object instead of cross-fading two. Scroll through each concept below to flick through its frames, or open the live prototype.</p>
+    </div>
+  </Sec>
+
+  {[
+    {
+      id: 'stack', n: '01', q: 'What if your wallet app behaved like a real stack of cards in your hand?',
+      body: 'Wallet apps show your cards as a flat list. In your hand, cards are a stack: you fan them out, slide one free, turn it over to read the back.',
+      steps: ['Drag up the stack: six cards spring apart. Cards at the back travel farther, so one move reads as a stagger.', 'Tap a card to pull it out. It lifts on a low-bounce spring while the rest sink into a peek.', 'Tap again to flip it: number, expiry and a working freeze toggle.'],
+      notes: 'The flip is a fake 3D turn: the card squashes to its edge (140 ms ease-in), swaps face out of sight, then opens (220 ms ease-out). It lives inside the card component, so it works anywhere.',
+      frames: [{ src: a1, label: 'Stack' }, { src: a2, label: 'Fan out' }, { src: a3, label: 'Pull a card' }, { src: a4, label: 'Flip it' }],
+      panel: '#ECEBE7', video: '/video/stack-preview.webm', parts: stackCards, partsAlt: 'Grid of 36 card variants: six colours, each with front, back and the squashed in-between frames used for the flip.',
+      built: 'card (36 variants) · toggle · 8 frames · 46 reactions', tags: ['Smart Animate', 'Drag gestures', 'Fake 3D flip', 'Springs'],
+    },
+    {
+      id: 'inside', n: '02', q: 'What if your mood check-in had a face that changed as you did?',
+      body: 'Mood trackers ask you to pick a word or an emoji. Inside gives your mood a body: Pip, a soft blob made only of simple shapes, that slumps, squints and grins as you swipe.',
+      steps: ['Drag Pip or tap a chip. Posture, eyes, brows, mouth, blush and colour all morph across five moods.', 'Save to my week: Pip shrinks into a dot and lands in today’s slot as the week rises in.', 'New check-in grows Pip back out of the dot.'],
+      notes: 'Pip is only rectangles and ellipses with identical layer names in every mood, so every feature tweens. It blinks on its own every 2.8 s, in a tiny loop inside the eyes component.',
+      frames: [{ src: b1, label: 'Joyful' }, { src: b2, label: 'Calm' }, { src: b3, label: 'Meh' }, { src: b4, label: 'Low' }, { src: b5, label: 'Grumpy' }, { src: b6, label: 'Your week' }],
+      panel: '#141414', dark: true, video: '/video/inside-preview.webm', parts: insidePip, partsAlt: 'Pip in five moods, Joyful, Calm, Meh, Low and Grumpy, each at full size and as a small dot.',
+      built: 'pip (10) · pip-body (10) · pip-eyes (10, blink) · 10 frames · 38 reactions', tags: ['Character morphing', 'Interactive components', 'Springs'],
+    },
+    {
+      id: 'tank', n: '03', q: 'What if drinking water kept a little fish alive?',
+      body: 'Hydration apps count glasses. Tank makes them matter: the water in Finn’s tank is your water for the day.',
+      steps: ['Tap +1 glass. The water rises on a slightly wobbly spring, the surface rolls, and Finn swims up with it.', 'Reach 8 of 8: Finn leaps out with a splash and a goal badge springs up.', 'Start over drains the tank.'],
+      notes: 'Each level is a variant of one tank component. The two wave strips shift half a wavelength per level, so the surface rolls as it rises; Finn alternates tail poses so he swims rather than slides.',
+      frames: [{ src: c0, label: '0 of 8' }, { src: c2, label: '2 of 8' }, { src: c4, label: '4 of 8' }, { src: c6, label: '6 of 8' }, { src: c7, label: '7 of 8' }, { src: c8, label: '8 of 8' }, { src: cg, label: 'Goal!' }],
+      panel: '#FFF6EA', video: '/video/tank-preview.webm', parts: tankLevels, partsAlt: 'Nine tank levels from nearly empty to full, side by side.',
+      built: 'tank (levels 0–8) · finn (3 poses) · 10 frames', tags: ['Component variants', 'Springs', 'After delay'],
+    },
+  ].map((c) => (
+    <Sec id={c.id} n={c.n} label={c.id.charAt(0).toUpperCase() + c.id.slice(1)} title={c.q}>
+      <div class="cs-split">
+        <div class="cs-prose">
+          <p>{c.body}</p>
+          <ol class="cs-notes cs-numbered">{c.steps.map((s) => <li><span>{s}</span></li>)}</ol>
+          <p class="info__tags">{c.tags.map((t) => <span class="chip">{t}</span>)}</p>
+        </div>
+        <div class="wi-video" style={`--panel:${c.panel}`}>
+          <video autoplay muted loop playsinline preload="none" data-lazy-video aria-label={`${c.id} flow preview`}>
+            <source src={c.video} type="video/webm" />
+          </video>
+        </div>
+      </div>
+      <Flipbook frames={c.frames} panel={c.panel} dark={c.dark} alt={`${c.id} prototype frames`} />
+      <div class="cs-split">
+        <div class="cs-callout"><span class="k">Motion notes</span><p>{c.notes}</p><p class="t-mono t-faint">Built with: {c.built}</p></div>
+        <div class="embed-cta" data-embed={embed(proto[c.id as keyof typeof proto])}>
+          <p class="t-mono t-faint">Live Figma prototype</p>
+          <button class="btn btn--solid" type="button" data-embed-load>Try it live <span class="arr">▶</span></button>
+          <a class="link-u t-mono" href={proto[c.id as keyof typeof proto]} target="_blank" rel="noopener">or open in a new tab ↗</a>
+        </div>
+      </div>
+      <Shot src={c.parts} kind="graphic" panel={c.panel === '#141414' ? '#1d1d1d' : c.panel} title="How it’s built" alt={c.partsAlt} />
+    </Sec>
+  ))}
+
+  <Sec id="springs" n="04" label="Spring reference" title="Mass / stiffness / damping, for every move." band>
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>Move</th><th>Spring</th></tr></thead>
+        <tbody>{springs.map(([m, s]) => <tr><td>{m}</td><td class="t-pixel">{s}</td></tr>)}</tbody>
+      </table>
+    </div>
+    <p>Each concept is deliberately small: one or two gestures, each a single native transition on a tuned spring. The goal was smoothness and feel, not features.</p>
+  </Sec>
+</CaseStudy>
+
+<style>
+  .wi-video { position: relative; background: var(--panel); border: 1px solid var(--line); aspect-ratio: 4 / 3; overflow: hidden; }
+  .wi-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .info__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  :global(.cs-band) .cs-table td { color: color-mix(in srgb, var(--bg) 75%, transparent); }
+  :global(.cs-band) .cs-table td:first-child { color: var(--bg); }
+  :global(.cs-band) .cs-table th { color: color-mix(in srgb, var(--bg) 50%, transparent); border-color: color-mix(in srgb, var(--bg) 20%, transparent); }
+  :global(.cs-band) .cs-table td { border-color: color-mix(in srgb, var(--bg) 14%, transparent); }
+  :global(.cs-band) .cs-table tbody tr:hover { background: color-mix(in srgb, var(--bg) 6%, transparent); }
+</style>
+
+<script>
+  import { $$ } from '../../scripts/core';
+  // load each preview video only when it nears the viewport
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const v = e.target as HTMLVideoElement;
+    v.preload = 'auto';
+    v.play().catch(() => {});
+    io.unobserve(v);
+  }), { rootMargin: '200px' });
+  $$<HTMLVideoElement>('[data-lazy-video]').forEach((v) => io.observe(v));
+
+  // Figma embeds are heavy: load on click
+  $$('[data-embed]').forEach((box) => {
+    box.querySelector('[data-embed-load]')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.className = 'embed-frame';
+      f.title = 'Interactive Figma prototype';
+      f.src = box.dataset.embed!;
+      f.allowFullscreen = true;
+      f.setAttribute('data-lenis-prevent', '');
+      box.replaceChildren(f);
+    });
+  });
+</script>

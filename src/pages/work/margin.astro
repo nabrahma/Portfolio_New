@@ -1,0 +1,297 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Sec from '../../components/case/Sec.astro';
+import Shot from '../../components/case/Shot.astro';
+import Quote from '../../components/case/Quote.astro';
+import Stats from '../../components/case/Stats.astro';
+import Bars from '../../components/case/Bars.astro';
+import watch from '../../assets/work/margin/watch.png';
+import library from '../../assets/work/margin/library.png';
+import offline from '../../assets/work/margin/offline.png';
+import search from '../../assets/work/margin/search.png';
+import revise from '../../assets/work/margin/revise.png';
+import lofi from '../../assets/work/margin/lofi.png';
+import watchMarked from '../../assets/work/margin/watchMarked.png';
+import sheet from '../../assets/work/margin/sheet.png';
+
+const FIGMA = 'https://www.figma.com/proto/KXXIhmsZL5ACv0Kg7lRzSS/Margin-%E2%80%94-Prototype?node-id=0-1&t=aCqtYL8RhkVNIJbg-1';
+const toc = [
+  { id: 'tldr', label: 'TL;DR' },
+  { id: 'research', label: 'Research' },
+  { id: 'findings', label: 'Findings' },
+  { id: 'hypotheses', label: 'Hypotheses' },
+  { id: 'surprise', label: 'The surprise' },
+  { id: 'landscape', label: 'Landscape' },
+  { id: 'insights', label: 'Insights' },
+  { id: 'concepts', label: 'Concepts' },
+  { id: 'design', label: 'Final design' },
+  { id: 'iteration', label: 'Iteration' },
+  { id: 'evaluation', label: 'Evaluation' },
+  { id: 'metrics', label: 'Measuring success' },
+  { id: 'outcome', label: 'Outcome' },
+];
+const yes = 'Yes', no = 'No', part = 'Partly', none = '—';
+---
+
+<CaseStudy
+  slug="margin"
+  headline="Every note, pinned to its second."
+  subhead="A study companion for students who learn from long recorded lectures. It works offline, keeps notes on the lecture’s timeline, and turns revision into minutes."
+  meta={[
+    { k: 'Role', v: 'Solo: UX research and product design' },
+    { k: 'Type', v: 'Self-initiated concept' },
+    { k: 'Platform', v: 'Android phone' },
+    { k: 'Tools', v: 'Figma, DM Sans' },
+  ]}
+  links={[
+    { label: 'Play the prototype', href: FIGMA, solid: true },
+    { label: 'Case study PDF', href: '/pdf/margin-case-study.pdf' },
+  ]}
+  toc={toc}
+  hero={watch}
+  heroAlt="Margin watch screen: a lecture video with pins listed under it, each tied to its second, and a yellow Pin this moment button."
+>
+  <Sec id="tldr" n="01" label="TL;DR" title="Students don’t lose focus. They lose the lecture.">
+    <div class="cs-cards">
+      <div class="cs-card" data-reveal>
+        <span class="k">The problem</span>
+        <p>Students learn from 2-hour recorded lectures. <b>177 of 607</b> relevant posts are about studying offline, and 20 say a “downloaded” lecture still wouldn’t play.</p>
+      </div>
+      <div class="cs-card" data-reveal data-reveal-delay="80">
+        <span class="k">What I did</span>
+        <p>Collected <b>10,657</b> public app reviews and forum posts, coded 935 against a study-moment codebook, and tested 7 hypotheses before designing anything.</p>
+      </div>
+      <div class="cs-card cs-card--ink" data-reveal data-reveal-delay="160">
+        <span class="k">What I designed</span>
+        <p>An offline-first player where every note is pinned to its second, resume starts where you understood, and revision replays only your pins.</p>
+      </div>
+    </div>
+    <Quote cite="App Store review (India), Unacademy, 2021">one has to search for the course and find the specific lecture</Quote>
+  </Sec>
+
+  <Sec id="research" n="02" label="Research" title="10,657 posts, narrowed to the 607 that matter.">
+    <div class="funnel" data-bars role="img" aria-label="Research funnel: 10,657 collected, 1,267 matched keywords, 935 coded, 607 relevant">
+      {[
+        ['10,657', 'public reviews and posts collected', 100],
+        ['1,267', 'matched study-moment keywords', 62],
+        ['935', 'coded one by one', 46],
+        ['607', 'relevant: the evidence base', 34],
+      ].map(([n, l, w]) => (
+        <div class="funnel__row"><span class="funnel__n" data-count={n as string}>{n}</span><span class="funnel__bar bar__fill" style={`width:${w}%`}>{l}</span></div>
+      ))}
+    </div>
+    <div class="cs-prose">
+      <p>Keyword matching alone was only 65% precise, so I coded every candidate by hand against 11 study-moment codes and kept each source link in a spreadsheet.</p>
+    </div>
+    <Stats items={[
+      { n: '452', l: 'App Store reviews (India) across 16 study apps, including PW, Unacademy and Udemy' },
+      { n: '126', l: 'Hacker News comments on learning from lecture videos' },
+      { n: '29', l: 'Stack Exchange posts on studying and note-taking' },
+    ]} />
+  </Sec>
+
+  <Sec id="findings" n="03" label="Findings" title="Study sessions break on access, not attention.">
+    <Bars label="Posts per code, n = 607" rows={[
+      { l: 'Offline, download or data', v: 177, tone: 'hl' },
+      { l: 'Playback reliability', v: 130, tone: 'hl' },
+      { l: 'Own notes', v: 127 },
+      { l: 'Finding a part', v: 84 },
+      { l: 'Teacher notes and PDFs', v: 61 },
+      { l: 'Revising', v: 59 },
+      { l: 'First watch and speed', v: 47 },
+      { l: 'Workarounds', v: 40 },
+      { l: 'AI, summary or transcript', v: 34 },
+      { l: 'Distraction and focus', v: 32, tone: 'acc' },
+      { l: 'Resuming', v: 15 },
+    ]} />
+    <p class="t-mono t-faint">Posts per code, n = 607. A post can carry several codes.</p>
+    <Stats items={[
+      { n: '177', l: 'posts (29%) are about offline use, downloads or data: the largest code. 168 are India store reviews.' },
+      { n: '130', l: 'reviews describe playback that freezes, lags or goes black.' },
+      { n: '32', l: 'mention distraction: 10th of 11 codes.' },
+    ]} />
+  </Sec>
+
+  <Sec id="hypotheses" n="04" label="Hypotheses" title="Seven hypotheses, tested against the data.">
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>ID</th><th>Hypothesis</th><th>Verdict</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td>H1</td><td>Students lose their place in long lectures</td><td><span class="verdict verdict--yes">Confirmed, sharpened</span></td><td>97 posts. Finding fails twice: the lecture (18) and the second (17). Resume restarts from zero (9).</td></tr>
+          <tr><td>H2</td><td>Notes live apart from the video and lose context</td><td><span class="verdict verdict--yes">Confirmed</span></td><td>127 posts. 15 ask to see notes beside the video; 7 say blocked screenshots broke their notes.</td></tr>
+          <tr><td>H3</td><td>Revision is the most painful moment</td><td><span class="verdict">Changed</span></td><td>59 posts, mostly positive: revision is why students value recordings.</td></tr>
+          <tr><td>H4</td><td>Recommendations pull students away mid-study</td><td><span class="verdict verdict--no">Rejected</span></td><td>32 posts (5%), and 6 say online lectures are less distracting than class.</td></tr>
+          <tr><td>H5</td><td>Low data and slow networks shape how they study</td><td><span class="verdict verdict--acc">Confirmed, strongest</span></td><td>177 posts (29%). 20 say downloads still need the internet or disappear.</td></tr>
+          <tr><td>H6</td><td>Students build workarounds that reveal needs</td><td><span class="verdict verdict--yes">Confirmed</span></td><td>40 workarounds, and 114 public GitHub tools built to bookmark video moments.</td></tr>
+          <tr><td>H7</td><td>Students would trust AI summaries with a source link</td><td><span class="verdict verdict--no">Not supported</span></td><td>No student asks for it, so AI summaries stay out of v1.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </Sec>
+
+  <Sec id="surprise" n="05" label="The surprise" title="Distraction wasn’t the problem." band>
+    <p class="t-lead">I expected the feed to be the enemy. The data says otherwise.</p>
+    <div class="cs-split">
+      <Stats cols={1} items={[{ n: '32 of 607', l: 'posts mention distraction, and 6 of those say online lectures are less distracting than class.' }]} />
+      <div class="cs-card" data-reveal>
+        <span class="k">What breaks the session instead</span>
+        <h3>130 reviews describe playback that freezes, lags or goes black.</h3>
+        <p>The tool breaks focus, not the feed.</p>
+      </div>
+    </div>
+    <Quote cite="App Store review (India), PW, 2023">download the lectures and then turn off ur internet to increase focus</Quote>
+    <p><strong>Design decision:</strong> no focus mode. The watch screen simply has nothing else on it.</p>
+  </Sec>
+
+  <Sec id="landscape" n="06" label="Landscape" title="No product connects the whole study loop.">
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>Product</th><th>Resume</th><th>Notes on a moment</th><th>Search inside</th><th>Revision</th><th>Offline</th></tr></thead>
+        <tbody>
+          {[
+            ['YouTube', none, no, part, no, part],
+            ['PW (Physics Wallah)', none, no, none, part, yes],
+            ['Unacademy', none, no, none, part, none],
+            ['Coursera', none, part, part, part, yes],
+            ['Khan Academy', yes, none, none, part, yes],
+            ['Google Keep', none, no, yes, no, yes],
+            ['Notion', none, no, yes, no, none],
+          ].map((r) => <tr>{r.map((c) => <td>{c}</td>)}</tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p class="t-mono t-faint">— = not listed in the product’s official help pages or store listing (checked 28 Oct 2026).</p>
+    <div class="cs-prose"><p><b>The gap:</b> players handle watching and note apps handle notes. Coursera comes closest, with notes saved against a frame, but community posts report that feature missing on Android. Nothing lets a student mark where they understood, or revise by replaying their own moments.</p></div>
+  </Sec>
+
+  <Sec id="insights" n="07" label="Insights → principles" title="Four insights, four design principles.">
+    <div class="cs-cards" style="--cols:2">
+      {[
+        ['177 posts on offline, downloads or data', '“Downloaded” doesn’t mean offline', 'I downloaded some lectures but can’t play them without internet', 'Adda247 review, 2023', 'Offline is the default'],
+        ['15 reviews ask for notes beside the video', 'Notes belong next to the lecture', 'I want to see the class notes side by side with the lecture', 'PW review, 2023', 'Every note knows its second'],
+        ['18 + 17 can’t find the lecture · the second', 'Finding fails twice', 'the video starts playing from the beginning rather than resuming', 'Udemy review, 2021', 'The student’s pins are the map'],
+        ['59 posts on revision, mostly why recordings matter', 'Revision is the payoff', 'Watch lectures at 1.5X speed (2X if review).', 'Hacker News, 2019', 'Revise the moments, not the lecture'],
+      ].map(([stat, title, q, src, pr], i) => (
+        <div class="cs-card" data-reveal data-reveal-delay={i * 60}>
+          <span class="k">I{i + 1} · {stat}</span>
+          <h3>{title}</h3>
+          <p>“{q}” <span class="t-faint">({src})</span></p>
+          <span class="pill">{pr}</span>
+        </div>
+      ))}
+    </div>
+    <div class="cs-cards" style="--cols:2">
+      <div class="cs-card" data-reveal>
+        <span class="k">Behaviour mode 1</span>
+        <h3>Backlog clearer</h3>
+        <p>Works through missed recorded classes in long late-night sittings, pausing to check the teacher’s PDF. Today’s apps restart the video, resume from zero, and lose downloads.</p>
+      </div>
+      <div class="cs-card" data-reveal data-reveal-delay="80">
+        <span class="k">Behaviour mode 2</span>
+        <h3>Revision sprinter</h3>
+        <p>In the days before an exam, rewatches only the parts that matter, at high speed. Today they can’t find the part again, skipping lags, and screenshots are blocked.</p>
+      </div>
+    </div>
+    <p class="t-mono t-faint">Behaviour modes instead of personas: the evidence describes study moments, not demographics.</p>
+  </Sec>
+
+  <Sec id="concepts" n="08" label="Concepts" title="Three concepts, one direction, two cuts.">
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>Concept</th><th>Score</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><b>A. Smarter player with pins</b> <span class="verdict verdict--acc">Chosen</span></td><td class="t-pixel">14 / 15</td><td>Pins live on the player itself, which fixes access and reliability, where the evidence is (177 + 130 posts).</td></tr>
+          <tr><td>B. Notes-first notebook</td><td class="t-pixel">10 / 15</td><td>Depends most on player APIs, and embedded videos can’t be clipped or frame-captured.</td></tr>
+          <tr><td>C. Exam planner</td><td class="t-pixel">8 / 15</td><td>Cold start with no pins, and no help at the 11 pm first watch. Its revision mode became an entry point in A.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="cs-notes">
+      <li><span><b>Cut: AI summaries.</b> No student asks for them; trust needs proof first.</span></li>
+      <li><span><b>Cut: a focus mode.</b> Distraction isn’t the problem, so the watch screen simply stays empty.</span></li>
+    </ul>
+  </Sec>
+
+  <Sec id="design" n="09" label="Final design" title="Every note pinned to its second.">
+    <div class="shot-row">
+      <Shot src={library} panel="#DDF0F8" title="Resume where you understood" caption="Two labelled choices, never a silent jump to zero." alt="Library screen with a green resume card and a yellow button: where you understood, 1:12:04." />
+      <Shot src={watch} panel="#FCF0C3" title="Pin without stopping" caption="One thumb-reach button. Pins sit under the video, each tied to its second." alt="Watch screen with pins listed under the video and a yellow Pin this moment button." />
+      <Shot src={offline} panel="#E4EEDC" title="Offline says what still works" caption="Downloaded lectures and every pin keep working. Missing ones say why." alt="Offline library with a blue banner and lectures marked downloaded, pins only, or failed with retry." />
+    </div>
+    <h3 class="cs-h3">Find the moment, then revise the moments</h3>
+    <div class="shot-row shot-row--2">
+      <Shot src={search} panel="#DDF0F8" title="Search" caption="Your own pins come first, with time chips, then caption matches." alt="Search results showing your pins first with time chips, then caption matches." />
+      <Shot src={revise} panel="#FFEBD1" title="Revise" caption="Pins replay as 20-second clips, up to 2×." alt="Revise screen playing clip 3 of 12 at 2×, with up-next pins." />
+    </div>
+    <h3 class="cs-h3">Each decision traces to evidence</h3>
+    <ol class="cs-notes cs-numbered">
+      <li><span><b>A pin is a second plus text, not a screenshot.</b> 7 reviews say screenshots are blocked in their app.</span></li>
+      <li><span><b>Search ranks the student’s own pins first.</b> Every result shows lecture, time and source. 18 posts can’t find the lecture.</span></li>
+      <li><span><b>Revise replays pins as 20-second clips, up to 2×.</b> 59 revision posts; students review at “2X if review”.</span></li>
+      <li><span><b>Downloads show size and free storage up front.</b> A 4-hour class can cost “approx 3 gb”.</span></li>
+      <li><span><b>Yellow means pin, and only pin.</b> Pin marks carry an ink outline: yellow alone is 1.4:1 on paper, the outline 15.8:1.</span></li>
+    </ol>
+    <Shot src={sheet} kind="graphic" title="A calm system with one highlighter" caption="DM Sans with tabular figures for every timestamp. Ink on paper 15.8:1 · white on Evergreen 9.1:1 · ink on Pin 11.2:1." alt="Component sheet with pin chips, the Pin this moment button, buttons, filter chips, status tags and the offline banner." />
+  </Sec>
+
+  <Sec id="iteration" n="10" label="Iteration" title="From first wireframe to final screen.">
+    <div class="shot-row shot-row--2">
+      <Shot src={lofi} panel="#EDEAE3" title="v1 wireframe" alt="Version 1 wireframe with a pin icon on the video overlay, an unlabelled flag on the timeline, and notes hidden in a swipe-up sheet." />
+      <Shot src={watchMarked} panel="#FCF0C3" title="Final" alt="Final watch screen with numbered markers showing the three fixes." />
+    </div>
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>#</th><th>v1 problem</th><th>Fix in the final design</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>The pin hid on the video overlay, out of thumb reach</td><td>A persistent Pin button in the thumb zone</td></tr>
+          <tr><td>2</td><td>Notes hid behind a swipe-up sheet</td><td>Pins listed under the video, always visible</td></tr>
+          <tr><td>3</td><td>An unlabelled flag meant “understood”</td><td>A labelled “Understood here” marker</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </Sec>
+
+  <Sec id="evaluation" n="11" label="Evaluation" title="Two review rounds, every failing step fixed.">
+    <Stats items={[
+      { n: '9 of 13', l: 'walkthrough steps failed or partly failed in round 1 (v1 wireframes).' },
+      { n: '0 of 13', l: 'steps fail in round 2, after the redesign.' },
+      { n: '13', l: 'issues from a Nielsen heuristic review, rated 0–4, plus a cognitive walkthrough of five core tasks.' },
+    ]} />
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>Severity</th><th>Issue in v1</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td class="t-pixel">4</td><td>Offline shown only as a crossed-cloud icon</td><td>A banner says what still works; every lecture shows its status</td></tr>
+          <tr><td class="t-pixel">3</td><td>Pin out of thumb reach, hidden with the controls</td><td>A persistent Pin button, bottom right</td></tr>
+          <tr><td class="t-pixel">3</td><td>Notes hidden behind a swipe-up sheet</td><td>Notes listed under the video</td></tr>
+          <tr><td class="t-pixel">3</td><td>Silent auto-resume and an unlabelled flag</td><td>Two labelled resume choices</td></tr>
+          <tr><td class="t-pixel">3</td><td>Search results without lecture or time</td><td>Every result shows lecture, time and source</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </Sec>
+
+  <Sec id="metrics" n="12" label="Measuring success" title="How I’d measure it, with Google’s HEART framework.">
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th></th><th>Goal</th><th>Signal</th></tr></thead>
+        <tbody>
+          <tr><td><b>Happiness</b></td><td>Studying feels less frustrating</td><td>Post-exam in-app rating, 1 to 5</td></tr>
+          <tr><td><b>Engagement</b></td><td>Pins become part of studying</td><td>Pins per hour of lecture watched</td></tr>
+          <tr><td><b>Adoption</b></td><td>New users get value fast</td><td>Share of new users who pin within their first lecture</td></tr>
+          <tr><td><b>Retention</b></td><td>Used for revision, not just once</td><td>Share of users who open Revise in the week before exams</td></tr>
+          <tr><td><b>Task success</b></td><td>Students find the part they need</td><td>Median time from search to playing the right moment</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cs-callout"><span class="k">Guardrail</span><p class="t-lead"><b>Total watch time must not rise.</b> Margin should make studying shorter, not longer.</p></div>
+  </Sec>
+
+  <Sec id="outcome" n="13" label="Outcome" title="What the research proved, and what Margin does." band>
+    <div class="cs-cards">
+      <div class="cs-card" data-reveal><span class="k">01</span><h3>Study apps fail on access, not attention.</h3><p>Offline and playback reliability are the two biggest codes, at 177 and 130 posts, so Margin treats offline as the default state.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">02</span><h3>Notes belong on the timeline.</h3><p>A pin, a second plus text, turns a 2-hour lecture into a map the student made, searchable across every lecture.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="160"><span class="k">03</span><h3>Revision is the payoff.</h3><p>Revise replays only the student’s pins: 12 moments in about 4 minutes, instead of hours of rewatching.</p></div>
+    </div>
+  </Sec>
+</CaseStudy>

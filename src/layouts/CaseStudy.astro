@@ -1,0 +1,105 @@
+---
+import '../styles/case.css';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Base from './Base.astro';
+import Footer from '../components/Footer.astro';
+import { bySlug, nextOf } from '../data/projects';
+
+interface Props {
+  slug: string;
+  headline: string;
+  subhead: string;
+  meta: { k: string; v: string }[];
+  links?: { label: string; href: string; solid?: boolean }[];
+  toc: { id: string; label: string }[];
+  hero: ImageMetadata;
+  heroAlt: string;
+  heroKind?: 'phone' | 'wide';
+  note?: string; // small disclosure line under the meta row
+}
+const { slug, headline, subhead, meta, links = [], toc, hero, heroAlt, heroKind = 'phone', note } = Astro.props;
+const p = bySlug(slug);
+const next = nextOf(slug);
+const nextCover = await getImage({ src: next.cover, width: 900, format: 'webp' });
+const og = await getImage({ src: p.cover, width: 1200, format: 'jpeg' });
+const heroImg = await getImage({ src: hero, width: heroKind === 'phone' ? 760 : 1800, format: 'webp' });
+---
+
+<Base title={p.title} description={`${p.title}: ${p.oneLiner}`} page="case" ogImage={og.src}>
+  <article class="cs" style={`--tint:${p.tint}; --spot:${p.spot}`}>
+    <header class="cs-hero wrap">
+      <p class="cs-path t-pixel" aria-label="Location">
+        <a href="/#work" class="link-u">C:\ARCHIVE</a><span>\</span><span>{p.code.replace(' ', '_')}_{p.title.toUpperCase().replace(/[^A-Z]/g, '')}</span><span>\</span><span class="t-accent">case_study.txt</span>
+      </p>
+
+      <div class="cs-hero__grid">
+        <div class="cs-hero__text">
+          <div class="cs-tab t-pixel"><b>{p.code}</b><span>{p.kind}</span></div>
+          <h1 class="t-display cs-title">{p.title}</h1>
+          <p class="t-h3 cs-headline" data-reveal>{headline}</p>
+          <p class="t-lead t-dim cs-sub" data-reveal data-reveal-delay="80">{subhead}</p>
+          {links.length > 0 && (
+            <div class="cs-links" data-reveal data-reveal-delay="140">
+              {links.map((l) => (
+                <a class={`btn ${l.solid ? 'btn--solid' : ''}`} href={l.href} target={l.href.startsWith('http') || l.href.endsWith('.pdf') ? '_blank' : undefined} rel="noopener">
+                  {l.label} <span class="arr">↗</span>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+        <figure class={`cs-hero__img is-${heroKind}`} data-pixel>
+          <img src={heroImg.src} alt={heroAlt} width={heroImg.attributes.width} height={heroImg.attributes.height} fetchpriority="high" />
+        </figure>
+      </div>
+
+      <dl class="cs-meta">
+        {meta.map((m) => (
+          <div><dt class="t-mono t-faint">{m.k}</dt><dd>{m.v}</dd></div>
+        ))}
+      </dl>
+      {note && <p class="cs-note t-mono">{note}</p>}
+    </header>
+
+    <div class="cs-body wrap">
+      <nav class="cs-toc" aria-label="Contents">
+        <p class="t-mono t-faint cs-toc__head">Folder contents</p>
+        <ol>
+          {toc.map((t, i) => (
+            <li><a href={`#${t.id}`} data-toc={t.id}><span class="t-pixel tnum">{String(i + 1).padStart(2, '0')}</span>{t.label}</a></li>
+          ))}
+        </ol>
+      </nav>
+      <div class="cs-main">
+        <slot />
+      </div>
+    </div>
+
+    <a class="cs-next" href={`/work/${next.slug}`} data-cursor="label:next folder">
+      <div class="wrap cs-next__inner">
+        <p class="t-mono">Next folder <span class="t-faint">/</span> <span class="t-pixel">{next.code}</span></p>
+        <p class="cs-next__title">{next.title} <span class="t-pixel">→</span></p>
+        <p class="t-dim cs-next__line">{next.oneLiner}</p>
+        <img src={nextCover.src} alt="" class={`cs-next__img is-${next.coverKind}`} style={`--tint:${next.tint}`} loading="lazy" />
+      </div>
+    </a>
+  </article>
+  <Footer />
+</Base>
+
+<script>
+  import { ScrollTrigger, $$ } from '../scripts/core';
+  // highlight the section being read in the contents list
+  const links = $$<HTMLAnchorElement>('[data-toc]');
+  links.forEach((a) => {
+    const sec = document.getElementById(a.dataset.toc!);
+    if (!sec) return;
+    ScrollTrigger.create({
+      trigger: sec,
+      start: 'top 45%',
+      end: 'bottom 45%',
+      onToggle: (self) => a.classList.toggle('is-active', self.isActive),
+    });
+  });
+</script>

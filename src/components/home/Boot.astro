@@ -1,0 +1,32 @@
+---
+import { site } from '../../data/site';
+// First visit per session only. Click or any key skips it.
+const lines = [
+  `NB-OS 2.7 · ${site.name.toUpperCase()}`,
+  'memory check ........ 640K, enough for anybody',
+  'mounting /surface ... ok',
+  'mounting /archive ... 5 folders, 18 classified',
+  'mounting /3d_world .. 17 renders',
+  'loading phosphor .... ok',
+  'calibrating cursor .. ok',
+  'starting world ......',
+];
+---
+
+<div class="boot" data-boot hidden aria-hidden="true">
+  <div class="boot__inner t-pixel">
+    {lines.map((l) => <p class="boot__line">{l}</p>)}
+    <div class="boot__bar"><i data-boot-bar></i></div>
+    <p class="boot__skip t-faint">click to skip</p>
+  </div>
+</div>
+
+<style>
+  .boot { position: fixed; inset: 0; z-index: 9500; background: var(--bg); color: var(--ink); display: grid; place-items: center; }
+  .boot__inner { width: min(560px, 86vw); font-size: 14px; line-height: 1.7; }
+  .boot__line { opacity: 0; white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+  .boot__line:first-child { color: var(--accent-ink); margin-bottom: 10px; }
+  .boot__bar { margin-top: 18px; height: 14px; border: 1px solid var(--ink); padding: 2px; }
+  .boot__bar i { display: block; height: 100%; width: 0; background: var(--ink); }
+  .boot__skip { margin-top: 14px; font-size: 11px; }
+</style>

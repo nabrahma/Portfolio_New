@@ -1,0 +1,15 @@
+---
+// A horizontal bar chart. tone: 'hl' (ink) | 'acc' (phosphor) | undefined (grey)
+interface Props { rows: { l: string; v: number; tone?: 'hl' | 'acc' }[]; label: string; max?: number }
+const { rows, label, max = Math.max(...rows.map((r) => r.v)) } = Astro.props;
+---
+
+<div class="cs-bars" data-bars role="img" aria-label={label}>
+  {rows.map((r) => (
+    <div class:list={['bar', r.tone && `is-${r.tone}`]}>
+      <span class="bar__l">{r.l}</span>
+      <span class="bar__track"><span class="bar__fill" style={`width:${(r.v / max) * 100}%`}></span></span>
+      <span class="bar__v tnum">{r.v}</span>
+    </div>
+  ))}
+</div>

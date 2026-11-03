@@ -1,0 +1,176 @@
+---
+import { getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Footer from '../components/Footer.astro';
+import { renders } from '../data/three-d';
+
+const items = await Promise.all(
+  renders.map(async (r) => ({
+    r,
+    thumb: await getImage({ src: r.image, width: 900, format: 'webp' }),
+    full: await getImage({ src: r.image, width: Math.min(2200, r.image.width), format: 'webp' }),
+  })),
+);
+const og = renders[0] ? (await getImage({ src: renders[0].image, width: 1200, format: 'jpeg' })).src : undefined;
+const bs = String.fromCharCode(92);
+---
+
+<Base title="3D" page="three-d" description="3D work by Nabaskar Brahma: quiet, cinematic scenes of one figure in many places." ogImage={og}>
+  <section class="td wrap">
+    <p class="t-pixel td__path"><a href="/" class="link-u">{`C:${bs}`}</a>{`3D_WORLD${bs}`}<span class="t-accent">*.jpg</span></p>
+    <header class="td__head">
+      <h1 class="t-display">3D_WORLD</h1>
+      <div class="td__intro">
+        <p class="t-lead">One figure, {renders.length} places.</p>
+        <p class="t-dim">Rooms, woods, streets and weather, each lit for one person who is usually alone in them. Click any frame to see it full size; arrow keys move through the reel.</p>
+        <p class="t-mono t-faint">{renders.length} renders · environments · lighting · mood</p>
+      </div>
+    </header>
+
+    {items.length === 0 ? (
+      <p class="t-lead t-dim">This folder is still rendering.</p>
+    ) : (
+      <ol class="sheet-grid">
+        {items.map(({ r, thumb }, i) => (
+          <li id={r.slug} class="frame" data-reveal>
+            <button class="frame__btn" type="button" data-open={i} data-cursor="label:full size" aria-label={`View ${r.title} full size`}>
+              <span class="frame__bar t-mono"><span class="t-pixel">R{String(i + 1).padStart(2, '0')}</span><span>{r.slug}.jpg</span></span>
+              <span class="frame__img" data-pixel>
+                <img src={thumb.src} width={thumb.attributes.width} height={thumb.attributes.height} alt={r.alt} loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
+              </span>
+              <span class="frame__cap">
+                <span class="frame__t">{r.title}</span>
+                {(r.year || r.tools?.length) && <span class="t-mono t-faint">{[r.year, ...(r.tools ?? [])].filter(Boolean).join(' · ')}</span>}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    )}
+  </section>
+
+  <dialog class="viewer" data-viewer aria-label="Render viewer">
+    <div class="viewer__bar t-mono">
+      <span class="viewer__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span data-v-name></span>
+      <span class="viewer__count tnum" data-v-count></span>
+      <button type="button" class="viewer__x" data-v-close aria-label="Close viewer">✕ <span class="t-faint">esc</span></button>
+    </div>
+    <div class="viewer__stage">
+      <button type="button" class="viewer__nav is-prev t-pixel" data-v-prev aria-label="Previous render">←</button>
+      <img data-v-img alt="" />
+      <button type="button" class="viewer__nav is-next t-pixel" data-v-next aria-label="Next render">→</button>
+    </div>
+    <p class="viewer__cap"><span class="viewer__t" data-v-title></span> <span class="t-faint" data-v-alt></span></p>
+  </dialog>
+
+  <script type="application/json" id="renders-data" set:html={JSON.stringify(items.map(({ r, full }) => ({ slug: r.slug, title: r.title, alt: r.alt, src: full.src })))} />
+  <Footer />
+</Base>
+
+<style>
+  .td { padding-top: calc(var(--bar-h) + 40px); padding-bottom: clamp(80px, 12vh, 140px); display: grid; gap: clamp(32px, 6vh, 64px); }
+  .td__path { color: var(--ink-2); font-size: 13px; }
+  .td__head { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px 48px; align-items: end; }
+  .td__intro { display: grid; gap: 12px; padding-bottom: 10px; }
+
+  .sheet-grid { list-style: none; padding: 0; columns: 3; column-gap: clamp(14px, 1.6vw, 24px); }
+  .frame { break-inside: avoid; margin-bottom: clamp(14px, 1.6vw, 24px); }
+  .frame__btn { display: grid; gap: 8px; width: 100%; text-align: left; }
+  .frame__bar { display: flex; justify-content: space-between; text-transform: none; color: var(--ink-2); }
+  .frame__bar .t-pixel { color: var(--accent-ink); }
+  .frame__img { position: relative; display: block; overflow: hidden; background: #050505; border: 1px solid var(--line-strong); }
+  .frame__img img { width: 100%; transition: transform 0.9s var(--ease-out), filter 0.4s; filter: saturate(0.9) brightness(0.95); }
+  .frame__img::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.2) 0 1px, transparent 1px 3px); transition: opacity 0.5s; }
+  .frame__btn:hover .frame__img img, .frame__btn:focus-visible .frame__img img { transform: scale(1.04); filter: none; }
+  .frame__btn:hover .frame__img::after { opacity: 0; }
+  .frame__cap { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .frame__t { font-size: 16px; letter-spacing: -0.015em; }
+
+  /* viewer */
+  .viewer {
+    width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+    background: #050505; color: #ecebe6; display: grid; grid-template-rows: auto 1fr auto;
+  }
+  .viewer:not([open]) { display: none; }
+  .viewer::backdrop { background: #050505; }
+  .viewer__bar { display: flex; align-items: center; gap: 16px; height: 40px; padding: 0 var(--pad); border-bottom: 1px solid rgb(255 255 255 / 0.12); text-transform: none; }
+  .viewer__dots { display: flex; gap: 4px; }
+  .viewer__dots i { width: 10px; height: 10px; border: 1px solid #ecebe6; }
+  .viewer__dots i:first-child { background: #ecebe6; }
+  .viewer__count { margin-left: auto; color: #8d8d88; }
+  .viewer__x { color: #ecebe6; font: inherit; display: inline-flex; gap: 6px; }
+  .viewer__stage { position: relative; display: grid; place-items: center; padding: 20px 72px; min-height: 0; }
+  .viewer__stage img { max-width: 100%; max-height: calc(100dvh - 140px); object-fit: contain; }
+  .viewer__nav { position: absolute; top: 50%; translate: 0 -50%; width: 48px; height: 48px; border: 1px solid rgb(255 255 255 / 0.3); color: #ecebe6; font-size: 20px; transition: background 0.2s, color 0.2s; }
+  .viewer__nav:hover { background: var(--accent); color: #0b0b0b; border-color: var(--accent); }
+  .viewer__nav.is-prev { left: var(--pad); }
+  .viewer__nav.is-next { right: var(--pad); }
+  .viewer__cap { padding: 12px var(--pad) 18px; font-size: 14px; line-height: 1.45; max-width: 90ch; }
+  .viewer__t { font-weight: 550; }
+  .viewer__cap .t-faint { color: #8d8d88; }
+
+  @media (max-width: 1000px) { .sheet-grid { columns: 2; } .td__head { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) {
+    .sheet-grid { columns: 1; }
+    .viewer__stage { padding: 12px; }
+    .viewer__nav { top: auto; bottom: 8px; translate: none; }
+  }
+</style>
+
+<script>
+  import { gsap, lenis, reduced, $, $$ } from '../scripts/core';
+  import { sfx } from '../scripts/sound';
+
+  type R = { slug: string; title: string; alt: string; src: string };
+  const data: R[] = JSON.parse($('#renders-data')?.textContent ?? '[]');
+  const dlg = $<HTMLDialogElement>('[data-viewer]');
+  if (dlg && data.length) {
+    const img = $<HTMLImageElement>('[data-v-img]', dlg)!;
+    let cur = 0;
+    const show = (i: number, dir = 0) => {
+      cur = (i + data.length) % data.length;
+      const r = data[cur];
+      img.src = r.src;
+      img.alt = r.alt;
+      $('[data-v-name]', dlg)!.textContent = `${r.slug}.jpg`;
+      $('[data-v-count]', dlg)!.textContent = `${String(cur + 1).padStart(2, '0')} / ${String(data.length).padStart(2, '0')}`;
+      $('[data-v-title]', dlg)!.textContent = r.title + '.';
+      $('[data-v-alt]', dlg)!.textContent = r.alt;
+      history.replaceState(null, '', `#${r.slug}`);
+      if (!reduced) gsap.fromTo(img, { opacity: 0, x: dir * 40, filter: 'blur(6px)' }, { opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.5, ease: 'power3.out' });
+      // warm the next one
+      new Image().src = data[(cur + 1) % data.length].src;
+    };
+    const open = (i: number) => {
+      show(i);
+      dlg.showModal();
+      lenis?.stop();
+      sfx.open();
+    };
+    const close = () => dlg.close();
+    dlg.addEventListener('close', () => {
+      lenis?.start();
+      history.replaceState(null, '', location.pathname);
+      document.getElementById(data[cur].slug)?.querySelector('button')?.focus({ preventScroll: true });
+    });
+    $$<HTMLButtonElement>('[data-open]').forEach((b) => b.addEventListener('click', () => open(Number(b.dataset.open))));
+    $('[data-v-close]', dlg)!.addEventListener('click', close);
+    $('[data-v-prev]', dlg)!.addEventListener('click', () => { show(cur - 1, -1); sfx.tick(); });
+    $('[data-v-next]', dlg)!.addEventListener('click', () => { show(cur + 1, 1); sfx.tick(); });
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1, 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1, -1); }
+    });
+    // swipe on touch
+    let sx = 0;
+    dlg.addEventListener('touchstart', (e) => (sx = e.touches[0].clientX), { passive: true });
+    dlg.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+    });
+    // arriving from the home strip: /3d#cafe opens that render
+    const at = data.findIndex((r) => r.slug === location.hash.slice(1));
+    if (at >= 0) setTimeout(() => open(at), 500);
+  }
+</script>

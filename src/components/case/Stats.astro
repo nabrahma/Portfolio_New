@@ -1,0 +1,14 @@
+---
+// Big numbers that count up. n keeps its own format: "10,657", "30 s", "2 of 6"
+interface Props { items: { n: string; l: string }[]; cols?: number }
+const { items, cols = items.length } = Astro.props;
+---
+
+<div class="cs-stats" style={`--cols:${cols}`}>
+  {items.map((s) => (
+    <div class="cs-stat" data-reveal>
+      <span class="cs-stat__n" data-count={/^\d[\d,.]*/.test(s.n) ? s.n : undefined}>{s.n}</span>
+      <span class="cs-stat__l">{s.l}</span>
+    </div>
+  ))}
+</div>

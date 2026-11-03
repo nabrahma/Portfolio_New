@@ -1,0 +1,26 @@
+# dependencies and builds
+node_modules/
+dist/
+.astro/
+.vercel/
+
+# secrets (set PUBLIC_WEB3FORMS_KEY in Vercel's environment settings instead)
+.env
+.env.*
+!.env.example
+
+# raw handoff zips extracted by `npm run assets` (their output in src/assets is committed)
+.handoff/
+
+# personal files that don't belong in the repo (the résumé PDF is rebuilt locally with `npm run resume`)
+Design_CV.pdf
+public/Nabaskar-Brahma-UX-Resume.pdf
+
+# logs and OS / editor clutter
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

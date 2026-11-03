@@ -1,0 +1,240 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Sec from '../../components/case/Sec.astro';
+import Shot from '../../components/case/Shot.astro';
+import Quote from '../../components/case/Quote.astro';
+import Stats from '../../components/case/Stats.astro';
+import Bars from '../../components/case/Bars.astro';
+import s1 from '../../assets/work/ruko/1-money-out.png';
+import s2 from '../../assets/work/ruko/2-pin-on-call.png';
+import s3 from '../../assets/work/ruko/3-why-scam.png';
+import s4 from '../../assets/work/ruko/4-call-family.png';
+import s5 from '../../assets/work/ruko/5-setup.png';
+import s6 from '../../assets/work/ruko/6-after-scam.png';
+import optA from '../../assets/work/ruko/option-a-bottom-sheet.png';
+import optB from '../../assets/work/ruko/option-b-full-screen.png';
+import timeline from '../../assets/work/ruko/scene-timeline.png';
+import participants from '../../assets/work/ruko/participants.png';
+import exQr from '../../assets/work/ruko/exhibit-qr.png';
+import exSms from '../../assets/work/ruko/exhibit-sms.png';
+import trust from '../../assets/work/ruko/trust-map.png';
+import warning from '../../assets/work/ruko/warning-test.png';
+import ins1 from '../../assets/work/ruko/insight-1-popups.png';
+import ins2 from '../../assets/work/ruko/insight-2-who-ended.png';
+import ins3 from '../../assets/work/ruko/insight-3-amounts.png';
+import flow from '../../assets/work/ruko/flow.png';
+import beforeAfter from '../../assets/work/ruko/before-after.png';
+
+const FIGMA = 'https://www.figma.com/proto/EYXopPlVVx481tO6oSbNkf/Ruko-%E2%80%94-Prototype?node-id=0-1&t=yVqXq0JyNGNksHK0-1';
+const T = '#E0EFEC', S = '#EEECE6';
+const toc = [
+  { id: 'tldr', label: 'TL;DR' },
+  { id: 'scene', label: 'The scene' },
+  { id: 'method', label: 'Method' },
+  { id: 'scams', label: 'Scams they met' },
+  { id: 'trust', label: 'Who they trust' },
+  { id: 'wrong', label: 'What I got wrong' },
+  { id: 'test', label: 'The warning test' },
+  { id: 'insights', label: 'Insights' },
+  { id: 'principles', label: 'Principles' },
+  { id: 'design', label: 'Final design' },
+  { id: 'before-after', label: 'Before and after' },
+  { id: 'metrics', label: 'Measuring success' },
+  { id: 'next', label: 'Next and learnings' },
+];
+---
+
+<CaseStudy
+  slug="ruko"
+  headline="A warning people believe, at the second it matters."
+  subhead="Scammers rush parents into paying. Ruko is a safety layer inside a payment app. It pauses the payment, says plainly what will happen to their money, and puts family one tap away."
+  meta={[
+    { k: 'Role', v: 'Solo: UX research and product design' },
+    { k: 'Research', v: '6 interviews, aged 48 to 68' },
+    { k: 'Platform', v: 'Android, inside a UPI payment app' },
+    { k: 'Timeline', v: 'Oct 2026' },
+  ]}
+  links={[
+    { label: 'Play the prototype', href: FIGMA, solid: true },
+    { label: 'Case study PDF', href: '/pdf/ruko-case-study.pdf' },
+  ]}
+  note="Ruko is Hindi for “stop”. It’s a working name."
+  toc={toc}
+  hero={s1}
+  heroAlt="Ruko stop screen: a red Stop and You are about to PAY ₹5,000, not receive it, with a Hindi line, an arrow showing money going out, a Decline request button and Call Amit (son) first."
+>
+  <Sec id="tldr" n="01" label="TL;DR" title="Parents knew the rules. Under a scammer’s pressure they forgot them.">
+    <div class="cs-cards">
+      <div class="cs-card" data-reveal><span class="k">The problem</span><p>Scammers keep parents on the phone and rush them. Today’s warnings look like every other pop-up, so they get tapped away.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">What I did</span><p><b>6 interviews</b> with relatives aged 48 to 68 about their scams and who they trust, plus a test of three warning messages.</p></div>
+      <div class="cs-card cs-card--ink" data-reveal data-reveal-delay="160"><span class="k">What I designed</span><p>A stop screen that names the money, explains why in their language, and offers one tap to call family.</p></div>
+    </div>
+    <Quote cite="P4, family friend, 61, on the warning that names the OTP trap">If this exact message had popped up on my screen last year… my ₹4,000 would still be in my pocket today!</Quote>
+  </Sec>
+
+  <Sec id="scene" n="02" label="The scene" title="He knew banks never ask for an OTP. With 30 seconds on the clock, he read one out.">
+    <div class="cs-split">
+      <Stats cols={1} items={[{ n: '30 s', l: 'P4, a retired officer, was told his bank KYC had expired. A caller asked for the “KYC verification number”.' }]} />
+      <Quote cite="P4, family friend, 61">In that moment of panic, you forget the rule that ‘banks never ask for OTP.’</Quote>
+    </div>
+    <Shot src={timeline} kind="graphic" alt="Timeline of P4’s scam in six steps. A fake bank text arrives, a caller rushes him with 30 seconds, he reads out a debit OTP and loses ₹4,000, cuts the call before a second ₹25,000 OTP, then his daughter has him call 1930. A marker shows where Ruko would step in: an OTP arriving during a stranger’s call." />
+  </Sec>
+
+  <Sec id="method" n="03" label="Method" title="Six conversations with family aged 48 to 68: close enough to be honest, too close to be neutral.">
+    <Shot src={participants} kind="graphic" alt="Six participant cards. P1 aunt, 52, daily UPI user, fake electricity-bill text. P2 uncle, 56, daily user, fake buyer’s QR to receive ₹8,000. P3 aunt, 48, sometimes, prize-fee message. P4 family friend, 61, sometimes, fake bank KYC text and OTP; lost ₹4,000. P5 grandmother, 68, rarely, fake police call about her grandson. P6 uncle, 64, rarely, fake customs digital arrest call." />
+    <div class="cs-split">
+      <div class="cs-callout"><span class="k">How</span><p>30-minute talks in Hindi and English about real payments and real scams, then three test warnings read aloud (in Hindi for P5).</p></div>
+      <div class="cs-callout"><span class="k">Strength and bias</span><p>They told me things they’d never tell a stranger, like P4’s loss. But they come from one family circle, found by referral, and they may have been kind to my ideas.</p></div>
+    </div>
+  </Sec>
+
+  <Sec id="scams" n="04" label="Scams they met" title="All 6 had met a scam. Fake “account blocked” texts and fake officers led.">
+    <Bars label="Scam patterns people met themselves, out of 6" max={6} rows={[
+      { l: 'Fake bill, KYC or “blocked” text', v: 3, tone: 'hl' },
+      { l: 'Fake officer on the call', v: 3, tone: 'hl' },
+      { l: '“Enter your PIN to receive”', v: 1 },
+      { l: 'Relative in trouble', v: 1 },
+      { l: 'Prize or job “fee”', v: 1 },
+      { l: 'Asked to read out an OTP', v: 1 },
+      { l: 'Payment link from a fake supplier', v: 0 },
+    ]} />
+    <p class="t-mono t-faint">Out of 6. One scam can carry several patterns.</p>
+    <div class="shot-row shot-row--2">
+      <Shot src={exQr} kind="graphic" panel={S} title="P2’s fake buyer, redrawn" alt="Redrawn chat from P2’s fake buyer asking him to scan a QR and enter his UPI PIN to receive ₹8,000, and to stay on the call. The number and the QR are hidden." />
+      <Shot src={exSms} kind="graphic" panel={S} title="P4’s texts, redrawn" alt="Redrawn texts from P4: a fake bank KYC warning, then the real debit OTP for ₹4,000, which the caller called a KYC verification number." />
+    </div>
+    <h3 class="cs-h3">Every scam borrowed something real</h3>
+    <div class="cs-cards">
+      {[
+        ['4 of 6', 'An official look', '“an army uniform photo… makes you respect the person”', 'P2'],
+        ['4 of 6', 'A ticking clock', '“Sir session will expire in 30 seconds”', 'P4'],
+        ['3 of 6', 'Staying on the call', '“He stayed on the phone line continuously”', 'P2'],
+        ['2 of 6', 'Timing from real life', '“just two days before, your uncle had paid the bill online”', 'P1'],
+        ['2 of 6', 'Renaming the risky step', 'A debit OTP, called a “KYC verification number”', 'P4'],
+        ['2 of 6', 'Keep it secret', '“don’t tell anyone in your neighborhood”', 'P3'],
+      ].map(([n, t, q, c], i) => (
+        <div class="cs-card" data-reveal data-reveal-delay={i * 50}><span class="k">{n}</span><h3>{t}</h3><p>{q} <span class="t-faint">({c})</span></p></div>
+      ))}
+    </div>
+  </Sec>
+
+  <Sec id="trust" n="05" label="Who they trust" title="6 of 6 trust family first. The app is trusted only when it explains itself.">
+    <Shot src={trust} kind="graphic" alt="Trust map from most to least trusted. First call: family, 6 of 6. Trusted with conditions: the app, 3 of 6, if it actually locks the transaction and explains clearly why; the bank in person, 2 of 6. When no one is home: people nearby, 3 of 6. Not trusted: texts claiming to be the bank, bank logos on chat profiles, helpline numbers from search, English pop-ups." />
+    <Quote cite="P5, grandmother, 68">I don’t know what ‘the app’ or ‘the phone’ is thinking, I only trust family.</Quote>
+  </Sec>
+
+  <Sec id="wrong" n="06" label="What I got wrong" title="I thought the gap was knowing the rules. It was remembering them under pressure." band>
+    <p><strong>My assumption:</strong> people fall for scams because nobody told them the rules.</p>
+    <Stats cols={1} items={[{ n: '2 of 6', l: 'knew the exact rule and still nearly fell, or did fall, for the scam (P2, P4).' }]} />
+    <Quote cite="P2, on the app’s “Never enter UPI PIN to receive money” banner">I have seen it 100 times, yet when that Army fellow was pressuring me on the call, my brain didn’t read the top banner!</Quote>
+    <div class="cs-card" data-reveal><span class="k">What changed</span><h3>Ruko is not an awareness feature.</h3><p>It repeats the rule at the second it is being broken, on the screen where it is being broken.</p></div>
+  </Sec>
+
+  <Sec id="test" n="07" label="The warning test" title="Asked which warning would stop them, 6 of 6 named the one that says where the money goes.">
+    <Shot src={warning} kind="graphic" alt="Three warnings side by side. Warning 1, generic, this may be a fraud, do not proceed: chosen by 0 of 6. Warning 2, Stop. You are about to PAY ₹5,000, not receive it: named by 6 of 6. Warning 3, This person asked for your OTP. Banks never ask for OTP. Call your son?: named by 5 of 6." />
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>Warning</th><th>Wording</th><th>Named it</th><th>Reactions</th></tr></thead>
+        <tbody>
+          <tr><td>1 · Generic</td><td>“Warning: this may be a fraud. Do not proceed.”</td><td class="t-pixel">0 of 6</td><td>3 would dismiss it, 2 would freeze, 1 would stop</td></tr>
+          <tr><td><b>2 · Names the money</b></td><td>“Stop. You are about to PAY ₹5,000, not receive it.”</td><td><span class="verdict verdict--acc">6 of 6</span></td><td>“This is 10 out of 10. It directly breaks the hypnosis.” (P2)</td></tr>
+          <tr><td>3 · Names the trap, offers a person</td><td>“This person asked for your OTP. Banks never ask for OTP. Call [son] before continuing?”</td><td><span class="verdict verdict--yes">5 of 6</span></td><td>First choice for P3 and P5. “like getting oxygen” (P5)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="t-mono t-faint">Each person heard all three, said what it meant and what they’d do, then said which would stop them. Some named two.</p>
+  </Sec>
+
+  <Sec id="insights" n="08" label="Insights" title="Three insights, each heard more than once.">
+    <div class="cs-split">
+      <div class="cs-prose">
+        <h3 class="cs-h3">1 · Generic warnings get a reflex, not a reading.</h3>
+        <p>“phones write so many things in English every day… So we get the habit of pressing ‘OK’ without reading deeply.” <span class="t-faint">(P1)</span></p>
+        <ul class="cs-notes"><li><span><b>0 of 6</b> chose the generic warning</span></li><li><span><b>5 of 6</b> have a habit for clearing pop-ups</span></li><li><span><b>3 of 6</b> struggled with English like “proceed”</span></li></ul>
+      </div>
+      <Shot src={ins1} kind="graphic" panel={S} alt="Four stacked pop-ups that all look alike: storage almost full, update available, security notice, and a fraud warning with Cancel and OK. A handwritten note reads Same box, same OK." />
+    </div>
+    <div class="cs-split">
+      <div class="cs-prose">
+        <h3 class="cs-h3">2 · A person, not a pop-up, ended 4 of the 6 scams.</h3>
+        <p>“seeing my grandson’s name on the screen is like getting oxygen. I will press that button immediately.” <span class="t-faint">(P5)</span></p>
+        <ul class="cs-notes"><li><span><b>4 of 6</b> scams ended by another person</span></li><li><span><b>6 of 6</b> trust family first</span></li><li><span><b>2 of 6</b> were told to keep it secret</span></li></ul>
+      </div>
+      <Shot src={ins2} kind="graphic" panel={S} alt="How each scam ended. P1 said my son is coming and the caller hung up. P2’s daughter took the phone. P3’s son blocked the number. P5’s neighbour called the real grandson. P4 cut the call himself after ₹4,000 had gone. P6 recognised the scam from the newspaper." />
+    </div>
+    <div class="cs-split">
+      <div class="cs-prose">
+        <h3 class="cs-h3">3 · The amount can’t spot a scam. The live call can.</h3>
+        <p>“Never allow a collect request or QR scan from WhatsApp to work while a person is actively on a phone call with an unknown number.” <span class="t-faint">(P2)</span></p>
+        <ul class="cs-notes"><li><span><b>5 of 6</b> scams ran over a live phone call</span></li><li><span><b>₹10</b>, the smallest ask, was below any real recent payment</span></li><li><span><b>3 of 6</b> don’t want checks on routine payments</span></li></ul>
+      </div>
+      <Shot src={ins3} kind="graphic" panel={S} alt="A log-scale line of rupee amounts. Real recent payments sit between ₹65 and ₹820. Scam asks range from ₹10 to ₹30,000 and overlap with them; four of the five came with a live call." />
+    </div>
+  </Sec>
+
+  <Sec id="principles" n="09" label="Design principles" title="Three rules every warning screen had to pass.">
+    <div class="cs-cards">
+      <div class="cs-card cs-card--ink" data-reveal><span class="k">From the warning test: 6 of 6</span><h3>Say what will happen to the money, in their words.</h3><p>“PAY ₹5,000, not receive it.” In Hindi, and read aloud on request.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">Insight 2: 5 of 6 chose it</span><h3>Offer a person, not just a warning.</h3><p>“Call Amit first”, by name, while the payment waits.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="160"><span class="k">Insights 1 and 3</span><h3>Step in at the risky moment only.</h3><p>On a call with an unknown number, yes. On the ₹65 ironing bill, never.</p></div>
+    </div>
+    <Shot src={flow} kind="graphic" title="Where Ruko steps in" caption="Ruko checks once, just before the PIN, and stays silent for everyday payments. Four signals already live in the payment app; two would need partner data." alt="Flow diagram. A payment goes request, check amount and person, enter PIN, money sent. Ruko checks just before the PIN pad. If a signal fires: the stop screen, then why it looks like a scam, then call family with the payment held, then decline or pay after a check." />
+    <h3 class="cs-h3">A bottom sheet looked like every other pop-up. A full-screen stop won.</h3>
+    <div class="shot-row shot-row--2">
+      <Shot src={optA} panel={S} title="A · Bottom sheet" caption="Lighter, but the Pay screen stays visible behind it." alt="Grey wireframe of a bottom sheet over a payment screen, with Decline and Call family buttons." />
+      <Shot src={optB} panel={T} title="B · Full-screen stop (chosen)" caption="The amount and its direction are the only things to read." alt="Grey wireframe of a full-screen stop: PAY ₹5,000, an arrow from you to them, Decline and Call family." />
+    </div>
+    <ul class="cs-notes">
+      <li><span>P2: “if it looks like an advertisement banner at the top or bottom of the screen, my eyes skip right over it.”</span></li>
+      <li><span>P3 panics over “which button is safe?” One screen, one safe button.</span></li>
+      <li><span>Full screen only for the stop moment, so it never becomes wallpaper.</span></li>
+    </ul>
+  </Sec>
+
+  <Sec id="design" n="10" label="Final design" title="Name the money. Explain in their language. Hand them a person.">
+    <div class="shot-row">
+      <Shot src={s1} panel={T} title="1 · Request takes money out" caption="“PAY” in red, the amount huge, and an arrow for anyone who reads little English." alt="Ruko stop screen with PAY ₹5,000 not receive it, an arrow from you to an unknown person, Decline request and Call Amit (son) first." />
+      <Shot src={s2} panel={S} title="2 · PIN asked during a call" caption="Names the caller’s trick. PIN entry pauses until the call ends." alt="Warning shown during a call with an unknown number: Don’t share your PIN or OTP on this call, in English and Hindi." />
+      <Shot src={s3} panel={T} title="3 · Why this looks like a scam" caption="Three plain reasons with icons, never colour alone. Listen in Hindi." alt="Three plain reasons in English and Hindi, each with an icon, and a Listen in Hindi button at the top." />
+      <Shot src={s4} panel={S} title="4 · Call family first" caption="A named person, not “contact support”. Nothing is sent while they call." alt="Payment on hold. A large A avatar for Amit, your son, with a Call Amit button, a Message button, and a second contact, Priya." />
+      <Shot src={s5} panel={T} title="5 · Set up together" caption="Family had set up the payment app for 4 of 6 already." alt="Setup in three steps: who should we call, warning language Hindi with read-aloud on, and when Ruko should step in." />
+      <Shot src={s6} panel={S} title="6 · After a scam" caption="“It’s not your fault” comes first. Then 1930, the bank, and family." alt="It’s not your fault. Four steps: call the 1930 cyber crime helpline, tell your bank to block, block this number, and tell Amit." />
+    </div>
+    <p class="t-mono t-faint">Names and amounts in the screens are samples.</p>
+  </Sec>
+
+  <Sec id="before-after" n="11" label="Research to design" title="Research turned a pop-up people tap past into a stop they read.">
+    <Shot src={beforeAfter} kind="graphic" alt="Before: a small grey dialog saying This may be a fraud. Do not proceed. with Cancel and OK, over a ₹5,000 payment request. After: the Ruko stop screen with four numbered changes." />
+    <ol class="cs-notes cs-numbered">
+      <li><span><b>The money and its direction come first.</b> “Number 2 tells me the exact rupee amount going out.” (P1)</span></li>
+      <li><span><b>An arrow, not a word like “proceed”.</b> 2 of 6 stumbled on “proceed”.</span></li>
+      <li><span><b>Their language, spoken aloud.</b> Asked for by P1 and P5.</span></li>
+      <li><span><b>One safe main button, and a person.</b> The generic warning “just scares you without telling you what to do next.” (P5)</span></li>
+    </ol>
+  </Sec>
+
+  <Sec id="metrics" n="12" label="Measuring success" title="Success is scams stopped, not warnings shown.">
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead><tr><th>What I’d measure</th><th>How</th><th>Signal of success</th></tr></thead>
+        <tbody>
+          <tr><td>Risky payments stopped</td><td>Share of warned payments declined or checked with family</td><td>High, and holding</td></tr>
+          <tr><td>False-alarm rate</td><td>Share of warnings on payments confirmed as genuine</td><td>Low, and falling</td></tr>
+          <tr><td>Family call-through</td><td>Share of stop screens where the trusted person is called</td><td>Rising after setup</td></tr>
+          <tr><td>Losses after “pay anyway”</td><td>Reports to the bank or 1930 after a warned payment went ahead</td><td>Close to zero</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cs-callout"><span class="k">The risk: warning fatigue</span><p>If Ruko fires on the ₹65 ironing bill, it becomes one more “storage full” pop-up, and the real stop gets tapped away too. Every false alarm spends trust the next warning needs.</p></div>
+    <div class="cs-callout"><span class="k">Guardrail</span><p class="t-lead"><b>Never block people from their own money without a way forward.</b></p></div>
+  </Sec>
+
+  <Sec id="next" n="13" label="Next and learnings" title="Next: test the stop screen with people outside my family." band>
+    <div class="cs-cards">
+      <div class="cs-card" data-reveal><span class="k">01</span><h3>Usability test with 5 people aged 45+.</h3><p>Spot a “receive” request that pays out, call family from the stop screen, recover after a scam.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">02</span><h3>Recruit beyond family.</h3><p>Other cities and languages, and people who have lost money.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="160"><span class="k">03</span><h3>Check feasibility with a bank.</h3><p>The OTP-during-a-call and reported-account signals need partner data.</p></div>
+    </div>
+    <p class="t-lead"><strong>What I learned:</strong> designing for people unlike me meant borrowing their words and their trust. The best copy in this project is “paise kat jayenge” (money will be cut from your account), and the best button is a son’s name.</p>
+  </Sec>
+</CaseStudy>

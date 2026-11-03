@@ -1,0 +1,171 @@
+---
+import { getImage } from 'astro:assets';
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import Sec from '../../components/case/Sec.astro';
+import Shot from '../../components/case/Shot.astro';
+import cover from '../../assets/work/thriftup/home-fold.webp';
+import personas from '../../assets/work/thriftup/03-personas.webp';
+import process from '../../assets/work/thriftup/04-sketches-wireframes-final.webp';
+import ia from '../../assets/work/thriftup/05-information-architecture.webp';
+import system from '../../assets/work/thriftup/06-design-system.webp';
+import mockup from '../../assets/work/thriftup/07-final-mockup.webp';
+import solution from '../../assets/work/thriftup/02-solution-screens.webp';
+import homeHero from '../../assets/work/thriftup/home-hero.webp';
+import how from '../../assets/work/thriftup/modacash-how-it-works.webp';
+import form from '../../assets/work/thriftup/modacash-declutter-form.webp';
+import whyUs from '../../assets/work/thriftup/home-why-thriftup.webp';
+import shopBy from '../../assets/work/thriftup/home-shop-by.webp';
+import search from '../../assets/work/thriftup/overlay-search.webp';
+import menu from '../../assets/work/thriftup/overlay-menu.webp';
+import login from '../../assets/work/thriftup/overlay-login.webp';
+import bagEmpty from '../../assets/work/thriftup/bag-empty-fold.webp';
+import profile from '../../assets/work/thriftup/profile-fold.webp';
+import homeFull from '../../assets/work/thriftup/home-full.webp';
+import icons from '../../assets/work/thriftup/nav-icons.webp';
+
+const full = await getImage({ src: homeFull, format: 'webp' });
+const toc = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'problem', label: 'The problem' },
+  { id: 'people', label: 'Who it’s for' },
+  { id: 'process', label: 'Process' },
+  { id: 'ia', label: 'Information architecture' },
+  { id: 'decisions', label: 'Key decisions' },
+  { id: 'system', label: 'Visual system' },
+  { id: 'final', label: 'Final design' },
+  { id: 'reflection', label: 'Reflection' },
+];
+---
+
+<CaseStudy
+  slug="thriftup"
+  headline="Making second-hand fashion feel first-rate."
+  subhead="An online thrift store for young adults, with ModaCash: a buy-back program that turns clothes you no longer wear into cash."
+  meta={[
+    { k: 'Timeline', v: '2024' },
+    { k: 'My role', v: 'Solo designer: research, personas, IA, wireframes, visual design' },
+    { k: 'Platform', v: 'Responsive web (desktop and tablet)' },
+    { k: 'Deliverables', v: 'Personas, sketches, wireframes, IA, design system, 50+ screens' },
+  ]}
+  toc={toc}
+  hero={cover}
+  heroKind="wide"
+  heroAlt="ThriftUp homepage, first screen: Thrift your way to amazing finds, with a declutter announcement bar and a Shop Now button."
+>
+  <Sec id="overview" n="01" label="Overview" title="Second-hand should fix price and planet. People just don’t trust it.">
+    <div class="cs-prose">
+      <p>New clothes are expensive and fast fashion is bad for the planet. Second-hand clothing should fix both, but physical thrift stores take time to dig through, and buying second-hand online means guessing about quality from one blurry photo.</p>
+      <p>ThriftUp is my answer: a curated online thrift store for budget-conscious, eco-minded young adults, paired with <b>ModaCash</b>, which lets shoppers send in old clothes and get paid when they sell. It gives people a reason to recycle, and keeps the store stocked.</p>
+    </div>
+  </Sec>
+
+  <Sec id="problem" n="02" label="The problem" title="Three barriers kept young adults away.">
+    <div class="cs-cards">
+      <div class="cs-card" data-reveal><span class="k">01 · Cost</span><h3>New fashion is expensive.</h3><p>Especially for students and early-career professionals.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="80"><span class="k">02 · Impact</span><h3>They care, and still buy fast fashion.</h3><p>Sustainability loses to convenience.</p></div>
+      <div class="cs-card cs-card--ink" data-reveal data-reveal-delay="160"><span class="k">03 · Trust</span><h3>Second-hand online feels risky.</h3><p>No way to check condition, fit or authenticity before you buy.</p></div>
+    </div>
+    <div class="cs-callout"><span class="k">How might we</span><p class="t-lead">Make shopping second-hand online feel as reliable and convenient as buying new, and give people a reason to sell back what they no longer wear?</p></div>
+  </Sec>
+
+  <Sec id="people" n="03" label="Who it’s for" title="Two budgets, one doubt: is this actually any good?">
+    <Shot src={personas} kind="wide" alt="User personas Emily, 22, a college student, and Jake, 28, a young professional in tech, with goals, pain points and motivations." />
+    <div class="cs-prose">
+      <p>Emily and Jake have different budgets and lifestyles but the same question. Price got them interested; trust would decide whether they bought. So <b>trust became the main thing the design had to deliver</b>, and price came second.</p>
+    </div>
+  </Sec>
+
+  <Sec id="process" n="04" label="Process" title="Sketches, wireframes, final. The structure never moved.">
+    <Shot src={process} kind="wide" alt="Paper sketches, grayscale wireframes and the final homepage side by side." />
+    <div class="cs-split">
+      <div class="cs-prose">
+        <p>I kept the homepage structure stable at every stage, so each round improved content and visuals instead of reworking layout. The page tells a story top to bottom: hero, familiar brands, ways to start browsing, why ThriftUp, community, why thrift, the ModaCash invitation, and the newsletter.</p>
+      </div>
+      <div class="scroll-frame" data-lenis-prevent tabindex="0" aria-label="Full ThriftUp homepage, scrollable">
+        <img src={full.src} width={full.attributes.width} height={full.attributes.height} loading="lazy" alt="ThriftUp homepage: hero, brands, bestsellers, categories, trust section, ModaCash banner and footer" />
+      </div>
+    </div>
+  </Sec>
+
+  <Sec id="ia" n="05" label="Information architecture" title="Five things in the header. Login only at checkout.">
+    <Shot src={ia} kind="wide" alt="Information architecture and purchase flow diagram." />
+    <div class="cs-prose">
+      <p>The header holds <b>Search, ModaCash, Profile, Bag</b> and a menu. The purchase path is short and linear: list → product → bag → checkout → log in → shipping → payment → done.</p>
+      <p><b>Anyone can browse, search, wishlist and fill a bag without an account.</b> A lightweight log-in pop-up appears only when it’s actually needed, not as a barrier at the door.</p>
+    </div>
+    <div class="shot-row">
+      <Shot src={search} kind="wide" title="Search" caption="Recent searches and recommendations before you type." alt="Search overlay with recent searches and recommendations" />
+      <Shot src={menu} kind="wide" title="Menu" caption="Catalogue and account pages in one drawer." alt="Menu drawer: Men, Women, Kids, Accessories, Exclusive, Orders, Wishlist, About us" />
+      <Shot src={login} kind="wide" title="Log in, at checkout" caption="Asked for only when it’s needed." alt="Log-in pop-up requested at checkout" />
+    </div>
+  </Sec>
+
+  <Sec id="decisions" n="06" label="Key decisions" title="Five decisions that carry the design.">
+    <Shot src={solution} kind="wide" alt="Collage of key ThriftUp screens." />
+    <div class="cs-split">
+      <div class="cs-prose">
+        <h3 class="cs-h3">1 · Selling is as easy to find as buying</h3>
+        <p>ModaCash has its own icon in the main header, and an announcement bar on every page asks, “Want to declutter your wardrobe? Get started.” Shoppers are sellers too.</p>
+      </div>
+      <Shot src={homeHero} kind="wide" alt="Hero: Thrift your way to amazing finds, with the declutter announcement bar" />
+    </div>
+    <div class="cs-split">
+      <div class="cs-prose">
+        <h3 class="cs-h3">2 · ModaCash in four plain steps</h3>
+        <p>Submit details, pack, send it to us, get paid when it sells. The declutter form is a single screen with one <b>ModaCash it!</b> button: lighter than taking a bag to a donation bin.</p>
+      </div>
+      <div class="shot-row shot-row--2">
+        <Shot src={how} kind="wide" alt="ModaCash How it works: submit details, pack, send, get paid" />
+        <Shot src={form} kind="wide" alt="Declutter your wardrobe form: photo upload, description, condition, type, size" />
+      </div>
+    </div>
+    <div class="cs-split">
+      <div class="cs-prose">
+        <h3 class="cs-h3">3 · Every trust worry has an answer in the UI</h3>
+        <ul class="cs-notes">
+          <li><span><b>“Is it in good condition?”</b> Every item is quality-checked, and the brand strip says so.</span></li>
+          <li><span><b>“What does it really look like?”</b> Several high-resolution photos, including close-ups.</span></li>
+          <li><span><b>“Do other people like it?”</b> Thrifter reviews sit on the homepage.</span></li>
+          <li><span><b>“Is this a real store?”</b> Familiar brands up front, retail-grade polish.</span></li>
+        </ul>
+      </div>
+      <Shot src={whyUs} kind="wide" alt="Why use ThriftUp? trust section: quality assured, cash for clothes, exclusive items, reviews" />
+    </div>
+    <div class="cs-split">
+      <div class="cs-prose">
+        <h3 class="cs-h3">4 · Discovery that feels curated, not cluttered</h3>
+        <p>Thrift stock is unpredictable, so there are many ways in: category, brand, Bestsellers, Exclusive and “You may also like”. Browsers can wander; shoppers with a goal can filter by type, size, brand, price and condition.</p>
+      </div>
+      <Shot src={shopBy} kind="wide" alt="Shop by category and shop by brand grids" />
+    </div>
+    <h3 class="cs-h3">5 · No dead ends</h3>
+    <div class="shot-row shot-row--2">
+      <Shot src={bagEmpty} kind="wide" title="Empty bag" caption="Shows your wishlist right underneath, one click to move items in." alt="Empty shopping bag state with wishlist items to move into the bag" />
+      <Shot src={profile} kind="wide" title="Profile" caption="Orders, wishlist, recently viewed and settings on one page." alt="Profile page with current and previous orders, wishlist, recently viewed and account settings" />
+    </div>
+  </Sec>
+
+  <Sec id="system" n="07" label="Visual system" title="Monochrome, so the clothes provide all the colour.">
+    <Shot src={system} kind="wide" alt="Design system: Poppins type scale and monochrome palette." />
+    <div class="cs-split">
+      <div class="cs-prose">
+        <p>Second-hand catalogues are visually messy: every item is a different colour, shot in a different place. A strict black, white and grey interface stays out of the way, so a mixed catalogue still looks consistent and premium.</p>
+        <p class="t-mono t-faint">Poppins · 72 / 48 / 32 / 24 / 10 px · #000 · #FFF · #212126 · #F2F2F2</p>
+      </div>
+      <Shot src={icons} kind="wide" alt="Navigation icons: search, ModaCash, profile, bag, menu" />
+    </div>
+  </Sec>
+
+  <Sec id="final" n="08" label="Final design" title="Desktop and tablet.">
+    <Shot src={mockup} kind="wide" alt="Final design on laptop and tablet." />
+  </Sec>
+
+  <Sec id="reflection" n="09" label="Reflection" title="If I took ThriftUp further." band>
+    <div class="cs-cards" style="--cols:2">
+      <div class="cs-card" data-reveal><span class="k">Test</span><h3>Run usability sessions on the two key flows.</h3><p>Buying an item, and listing one through ModaCash.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="60"><span class="k">Show value up front</span><h3>Estimate the payout before someone submits.</h3><p>Not knowing the reward is the most likely reason a seller drops off.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="120"><span class="k">One promise</span><h3>Settle cash versus points.</h3><p>The screens use both, so the reward model should be one clear promise.</p></div>
+      <div class="cs-card" data-reveal data-reveal-delay="180"><span class="k">Mobile first</span><h3>Build the declutter flow around the phone camera.</h3><p>Plus a clear condition grade (Like new / Gently used / Well loved) and an accessibility audit.</p></div>
+    </div>
+  </Sec>
+</CaseStudy>

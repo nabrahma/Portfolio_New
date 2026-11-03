@@ -1,0 +1,76 @@
+---
+import { site } from '../../data/site';
+---
+
+<canvas class="world" aria-hidden="true"></canvas>
+
+<section id="surface" class="hero" aria-labelledby="hero-title" data-cursor="label:click to stir">
+  <div class="hero__meta t-mono">
+    <span>Index 000 <span class="t-faint">/</span> Surface</span>
+    <span class="t-faint hero__coords">A field, a desk, a screen, and a lot of sky.</span>
+  </div>
+
+
+  <div class="hero__bottom">
+    <h1 id="hero-title" class="hero__title">
+      <span class="hero__l1">Designing for the <span class="hi">person</span></span>
+      <span class="hero__l2">in front of the screen.</span>
+    </h1>
+    <div class="hero__side">
+      <p class="hero__intro">
+        I'm <strong>{site.name}</strong>, a {site.role} who digs into research before drawing a single screen.
+        Also a {site.roleNext} who builds quiet, cinematic little worlds.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--solid" href="#work" data-cursor="label:dig ↓">Dig in <span class="arr">↓</span></a>
+        <a class="btn" href="#letters">Leave a letter <span class="arr">✉</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .world {
+    position: fixed; inset: 0; z-index: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+  }
+  .hero {
+    position: relative; z-index: 1;
+    height: 100svh; min-height: 560px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: calc(var(--bar-h) + 22px) var(--pad) calc(28px + clamp(24px, 5vh, 56px));
+  }
+  .hero__meta { display: flex; justify-content: space-between; gap: 24px; }
+  .hero__bottom { display: grid; grid-template-columns: 1.4fr 1fr; align-items: end; gap: clamp(24px, 4vw, 64px); }
+  .hero::before {
+    content: ''; position: absolute; inset: auto 0 0 0; height: 46%; z-index: -1; pointer-events: none;
+    background: linear-gradient(to top, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 38%, transparent 100%);
+  }
+  .hero__title {
+    color: var(--ink-3); font-weight: 330; letter-spacing: -0.05em; line-height: 0.96;
+    font-size: clamp(38px, 5.4vw, 88px);
+  }
+  .hero__title > span { white-space: nowrap; }
+  .hero__title > span { display: block; }
+  .hero__title .hi { color: var(--ink); position: relative; white-space: nowrap; }
+  .hero__title .hi::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0.02em; height: 0.09em;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 0.09em, transparent 0.09em 0.14em);
+  }
+  .hero__side { display: grid; gap: 22px; justify-items: start; max-width: 420px; justify-self: end; }
+  .hero__intro { color: var(--ink-2); font-size: 15px; line-height: 1.5; }
+  .hero__intro strong { color: var(--ink); font-weight: 500; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: 10px; }
+
+
+  @media (max-width: 900px) {
+    .hero__bottom { grid-template-columns: 1fr; }
+    .hero__side { justify-self: start; }
+    .hero__coords { display: none; }
+    .hero__title > span { white-space: normal; }
+    .hero__title { font-size: clamp(34px, 9.4vw, 52px); text-wrap: balance; }
+    .hero__title > span { text-wrap: balance; }
+    .hero__intro { font-size: 14px; }
+    .hero__side { gap: 16px; }
+  }
+</style>

@@ -1,0 +1,226 @@
+---
+import { getImage } from 'astro:assets';
+import { projects, fillerFolders } from '../../data/projects';
+import { site } from '../../data/site';
+
+const covers = await Promise.all(projects.map((p) => getImage({ src: p.cover, width: 720, format: 'webp' })));
+
+// Build the drawer, back to front. Real folders are spread through the stack.
+type Row = { kind: 'real'; p: (typeof projects)[number]; img: string } | { kind: 'filler'; label: string };
+const rows: Row[] = [];
+const realAt = [3, 7, 11, 15, 19];
+let f = 0;
+for (let i = 0; i < fillerFolders.length + projects.length; i++) {
+  const r = realAt.indexOf(i);
+  if (r >= 0) rows.push({ kind: 'real', p: projects[r], img: covers[r].src });
+  else rows.push({ kind: 'filler', label: fillerFolders[f++] });
+}
+const N = rows.length;
+const tabX = [0.1, 0.52, 0.32, 0.6, 0.14, 0.44, 0.66, 0.24, 0.5, 0.06, 0.38, 0.62, 0.18, 0.56, 0.3, 0.68, 0.12, 0.46, 0.26, 0.58, 0.08, 0.4, 0.64];
+
+const W = 1000, H = 150, T = 30;
+function folderPath(tx: number, tw: number) {
+  const a = tx * W, b = a + tw * W;
+  return `M0 ${H} V${T + 6} Q0 ${T} 6 ${T} H${a} C${a + 9} ${T} ${a + 7} 0 ${a + 18} 0 H${b - 18} C${b - 7} 0 ${b - 9} ${T} ${b} ${T} H${W - 6} Q${W} ${T} ${W} ${T + 6} V${H}`;
+}
+---
+
+<section id="work" class="archive" aria-labelledby="work-title">
+  <header class="archive__head wrap">
+    <p class="t-mono"><span class="t-accent">Index 001</span> <span class="t-faint">/</span> The archive</p>
+    <h2 id="work-title" class="t-h1" data-split>Five folders worth opening.<br /><span class="t-faint">Eighteen that aren’t.</span></h2>
+    <div class="archive__views t-mono" role="tablist" aria-label="Archive view">
+      <button role="tab" aria-selected="true" data-view="drawer">▤ Drawer</button>
+      <button role="tab" aria-selected="false" data-view="list">☰ List</button>
+    </div>
+  </header>
+
+  <div class="archive__body wrap" data-view-current="drawer">
+    <!-- DRAWER VIEW -->
+    <div class="drawer-wrap" data-panel="drawer">
+      <div class="drawer" style={`--n:${N}`}>
+        <svg class="drawer__walls" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M11 0 L0.3 100 M89 0 L99.7 100" vector-effect="non-scaling-stroke" />
+        </svg>
+        <ol class="drawer__stack" aria-label="Project folders">
+          {rows.map((row, i) => {
+            const tw = row.kind === 'real' ? 0.3 : 0.24;
+            const tx = Math.min(tabX[i % tabX.length], 1 - tw - 0.03);
+            const style = `--i:${i}; --w:${78 + (22 * i) / (N - 1)}%; --tx:${tx * 100}%; --tw:${tw * 100}%`;
+            return row.kind === 'real' ? (
+              <li class="folder is-real" style={style}>
+                <a href={`/work/${row.p.slug}`} class="folder__hit" data-slug={row.p.slug} data-cursor="label:open folder" aria-label={`${row.p.title}: ${row.p.oneLiner}`}>
+                  <span class="folder__paper" aria-hidden="true" style={`--tint:${row.p.tint}`}>
+                    <img src={row.img} alt="" loading="lazy" decoding="async" class={`is-${row.p.coverKind}`} />
+                  </span>
+                  <svg class="folder__shape" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+                    <path d={folderPath(tx, tw)} vector-effect="non-scaling-stroke" />
+                    <path class="folder__tabfill" d={`M${tx * W} ${T} C${tx * W + 9} ${T} ${tx * W + 7} 0 ${tx * W + 18} 0 H${(tx + tw) * W - 18} C${(tx + tw) * W - 7} 0 ${(tx + tw) * W - 9} ${T} ${(tx + tw) * W} ${T} Z`} />
+                  </svg>
+                  <span class="folder__tab t-pixel"><b>{row.p.code}</b><span>{row.p.title}</span></span>
+                </a>
+              </li>
+            ) : (
+              <li class="folder is-filler" style={style} data-cursor="label:classified" aria-hidden="true">
+                <svg class="folder__shape" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+                  <path d={folderPath(tx, tw)} vector-effect="non-scaling-stroke" />
+                </svg>
+                <span class="folder__tab"><b class="tnum">{row.label.slice(0, 3)}</b><span>{row.label.slice(4)}</span></span>
+              </li>
+            );
+          })}
+        </ol>
+        <div class="drawer__front" aria-hidden="true">
+          <span class="drawer__handle"></span>
+          <span class="drawer__tape t-pixel">{site.name.toLowerCase()}’s files · 2024–26</span>
+        </div>
+      </div>
+
+      <aside class="info win" aria-live="polite">
+        <div class="win__bar"><span class="win__dots"><i></i><i></i><i></i></span><span>Get info</span></div>
+        <div class="info__body">
+          <div class="info__empty">
+            <p class="t-pixel info__big">?</p>
+            <p class="t-dim">Hover a folder. Five are mine to show. The rest are mine to keep.</p>
+          </div>
+          {projects.map((p, i) => (
+            <div class="info__item" data-info={p.slug} hidden>
+              <div class="info__img" style={`--tint:${p.tint}`}><img src={covers[i].src} alt="" class={`is-${p.coverKind}`} loading="lazy" /></div>
+              <dl class="info__meta t-mono">
+                <div><dt>Name</dt><dd>{p.title}</dd></div>
+                <div><dt>Kind</dt><dd>{p.kind}</dd></div>
+                <div><dt>Year</dt><dd>{p.year}</dd></div>
+                <div><dt>Index</dt><dd class="t-pixel">{p.code}</dd></div>
+              </dl>
+              <p class="info__line">{p.oneLiner}</p>
+              <p class="info__tags">{p.tags.map((t) => <span class="chip">{t}</span>)}</p>
+            </div>
+          ))}
+        </div>
+      </aside>
+    </div>
+
+    <!-- LIST VIEW -->
+    <ol class="list" data-panel="list">
+      {projects.map((p, i) => (
+        <li>
+          <a href={`/work/${p.slug}`} class="list__row" data-slug={p.slug} data-cursor="label:open">
+            <span class="t-pixel list__code">{p.code}</span>
+            <span class="list__title">{p.title}</span>
+            <span class="list__line t-dim">{p.oneLiner}</span>
+            <span class="t-mono t-dim list__kind">{p.kind}</span>
+            <span class="t-mono tnum list__year">{p.year}</span>
+            <span class="t-pixel list__arr">→</span>
+          </a>
+          <img class="list__peek" src={covers[i].src} alt="" loading="lazy" style={`--tint:${p.tint}`} />
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .archive { position: relative; z-index: 2; background: var(--bg); padding: clamp(96px, 14vh, 160px) 0 clamp(80px, 12vh, 140px); border-top: 1px solid var(--line); }
+  .archive__head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 20px 40px; margin-bottom: clamp(40px, 7vh, 80px); }
+  .archive__head > p { grid-column: 1 / -1; }
+  .archive__views { display: flex; border: 1px solid var(--line-strong); }
+  .archive__views button { padding: 9px 14px; transition: background 0.2s, color 0.2s; }
+  .archive__views button[aria-selected='true'] { background: var(--ink); color: var(--bg); }
+
+  .archive__body[data-view-current='drawer'] [data-panel='list'] { display: none; }
+  .archive__body[data-view-current='list'] [data-panel='drawer'] { display: none; }
+
+  /* ---------- drawer ---------- */
+  .drawer-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(24px, 4vw, 64px); align-items: start; }
+  .drawer { position: relative; max-width: 920px; width: 100%; margin-inline: auto; padding-top: 150px; }
+  .drawer__walls { position: absolute; left: 0; right: 0; top: 150px; bottom: 60px; width: 100%; height: calc(100% - 210px); overflow: visible; }
+  .drawer__walls path { fill: none; stroke: var(--ink); stroke-width: 1.2; }
+  .drawer__stack { list-style: none; padding: 0; position: relative; }
+  .folder { position: relative; width: var(--w); height: 150px; margin: -112px auto 0; transition: transform 0.5s var(--ease-out); }
+  .folder:first-child { margin-top: 0; }
+  .folder__hit { position: absolute; inset: 0; display: block; outline: none; }
+  .folder__shape { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; overflow: visible; }
+  .folder__shape path { fill: var(--bg); stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; transition: fill 0.25s; }
+  .folder__shape .folder__tabfill { fill: var(--ink); stroke: none; }
+  .folder__tab {
+    position: absolute; z-index: 3; top: 0; height: 30px; left: var(--tx); width: var(--tw);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 24px 0;
+    font-size: 13px; white-space: nowrap; overflow: hidden;
+  }
+  .folder__tab b { font-weight: 400; }
+  .is-filler .folder__tab { font-family: var(--font-sans); font-size: 13px; color: var(--ink); }
+  .is-filler .folder__tab b { color: var(--ink-2); font-family: var(--font-mono); font-size: 12px; }
+  .is-filler .folder__tab span { overflow: hidden; text-overflow: ellipsis; }
+  .is-real .folder__tab { color: var(--bg); font-size: 13.5px; letter-spacing: 0.02em; text-transform: uppercase; }
+  .folder__paper {
+    position: absolute; z-index: 1; left: calc(var(--tx) - 2%); width: min(300px, 56%); top: 36px; height: 110px;
+    background: var(--tint); border: 1px solid var(--ink); overflow: hidden;
+    transform: translateY(0); transition: transform 0.55s var(--ease-drawer);
+  }
+  .folder__paper img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .folder__paper img.is-phone { width: 46%; margin-inline: auto; object-fit: cover; object-position: top; padding-top: 8px; }
+
+  .is-real:hover, .is-real:focus-within { transform: translateY(-26px); }
+  .is-real:hover .folder__paper, .is-real:focus-within .folder__paper { transform: translateY(-128px) rotate(-1.5deg); }
+  .is-real:hover .folder__tabfill, .is-real:focus-within .folder__tabfill { fill: var(--accent); }
+  .is-real:hover .folder__tab, .is-real:focus-within .folder__tab { color: var(--on-accent); }
+  .is-real .folder__hit:focus-visible .folder__shape path:first-child { stroke-width: 2.4; }
+  .is-filler:hover { transform: translateY(-7px); }
+  .is-filler.is-nope { animation: nope 0.36s steps(6); }
+  @keyframes nope { 25% { translate: -5px 0; } 50% { translate: 5px 0; } 75% { translate: -3px 0; } }
+  .drawer.is-peeking .folder:not(.is-hot) .folder__shape path:first-child { stroke: var(--ink-3); }
+
+  .drawer__front {
+    position: relative; z-index: 5; height: 120px; margin-top: -36px;
+    border: 1.3px solid var(--ink); background: var(--bg);
+    display: grid; place-items: center;
+    box-shadow: 0 -1px 0 var(--bg);
+  }
+  .drawer__front::before { content: ''; position: absolute; left: -1px; right: -1px; top: -14px; height: 14px; border: 1.3px solid var(--ink); border-bottom: 0; background: var(--bg); }
+  .drawer__handle { width: 120px; height: 18px; border: 1.3px solid var(--ink); border-radius: 0 0 14px 14px; border-top: 0; margin-top: -40px; }
+  .drawer__tape { position: absolute; bottom: 22px; padding: 5px 12px 4px; background: var(--accent); color: var(--on-accent); font-size: 13px; border: 1px solid var(--ink); transform: rotate(-1.2deg); }
+
+  /* get info */
+  .info { position: sticky; top: calc(var(--bar-h) + 24px); }
+  .info__body { padding: 16px; min-height: 380px; }
+  .info__empty { display: grid; gap: 12px; padding-top: 40px; text-align: center; justify-items: center; }
+  .info__big { font-size: 64px; line-height: 1; color: var(--ink-3); }
+  .info__img { aspect-ratio: 4 / 3; background: var(--tint); overflow: hidden; border: 1px solid var(--line); margin-bottom: 14px; }
+  .info__img img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .info__img img.is-phone { width: 52%; margin-inline: auto; padding-top: 14px; }
+  .info__meta { display: grid; gap: 6px; margin-bottom: 14px; }
+  .info__meta div { display: grid; grid-template-columns: 60px 1fr; }
+  .info__meta dt { color: var(--ink-3); }
+  .info__line { font-size: 15px; line-height: 1.45; margin-bottom: 12px; }
+  .info__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* ---------- list ---------- */
+  .list { list-style: none; padding: 0; border-top: 1px solid var(--line-strong); }
+  .list li { position: relative; }
+  .list__row {
+    display: grid; grid-template-columns: 80px 1.1fr 2fr 1.2fr 60px 24px; align-items: center; gap: 20px;
+    padding: 22px 8px; border-bottom: 1px solid var(--line);
+    transition: background 0.2s, color 0.2s, padding 0.3s var(--ease-out);
+  }
+  .list__row:hover { background: var(--ink); color: var(--bg); padding-left: 20px; }
+  .list__row:hover .t-dim { color: var(--ink-3); }
+  .list__title { font-size: clamp(24px, 2.6vw, 38px); letter-spacing: -0.035em; line-height: 1; }
+  .list__line { font-size: 14.5px; line-height: 1.4; }
+  .list__peek {
+    position: fixed; left: 0; top: 0; z-index: 50; width: 260px; aspect-ratio: 4/3; object-fit: cover; object-position: top;
+    background: var(--tint); border: 1px solid var(--ink); pointer-events: none;
+    opacity: 0; transform: scale(0.9); transition: opacity 0.2s, transform 0.3s var(--ease-out);
+  }
+  .list li:hover .list__peek { opacity: 1; transform: scale(1); }
+
+  @media (max-width: 1100px) { .drawer-wrap { grid-template-columns: 1fr; } .info { display: none; } }
+  @media (max-width: 760px) {
+    .archive__views { display: none; }
+    .archive__body [data-panel='drawer'] { display: none !important; }
+    .archive__body [data-panel='list'] { display: block !important; }
+    .list__row { grid-template-columns: 56px 1fr 20px; gap: 10px 14px; }
+    .list__line { grid-column: 2 / 3; }
+    .list__kind, .list__year { display: none; }
+    .list__peek { display: none; }
+  }
+</style>

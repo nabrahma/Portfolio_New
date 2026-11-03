@@ -1,0 +1,42 @@
+---
+import { site } from '../data/site';
+const links = [
+  ...(site.email ? [{ label: 'Email', href: `mailto:${site.email}` }] : []),
+  ...site.socials.filter((s) => s.href),
+  ...(site.resume ? [{ label: 'Résumé', href: site.resume }] : []),
+];
+const { home = false } = Astro.props as { home?: boolean };
+---
+
+<footer class="foot" aria-label="Site footer">
+  <div class="wrap foot__top">
+    <a class="resurface" href={home ? '#surface' : '/'} data-resurface data-cursor="label:resurface ↑">
+      <span class="t-pixel resurface__arr" aria-hidden="true">↑</span>
+      <span class="t-mono">Resurface</span>
+    </a>
+    <ul class="foot__links t-mono">
+      {links.map((l) => <li><a class="link-u" href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noopener">{l.label} ↗</a></li>)}
+      <li><a class="link-u" href={home ? '#letters' : '/#letters'}>Write a letter</a></li>
+    </ul>
+  </div>
+  <p class="foot__name" aria-hidden="true"><span>{site.name.split(' ')[0]}</span><span class="t-faint">{site.name.split(' ').slice(1).join(' ')}</span></p>
+  <div class="wrap foot__meta t-mono">
+    <span>© 2026 {site.name}</span>
+    <span class="t-faint">Built with Astro, GSAP, Lenis and Three.js · Type: Geist, Departure Mono</span>
+    <span>{site.role} + {site.roleNext}</span>
+  </div>
+</footer>
+
+<style>
+  .foot { position: relative; z-index: 2; background: var(--bg); border-top: 1px solid var(--line-strong); padding: 40px 0 52px; overflow: hidden; }
+  .foot__top { display: flex; justify-content: space-between; align-items: start; gap: 24px; flex-wrap: wrap; }
+  .resurface { display: inline-flex; align-items: center; gap: 14px; padding: 10px 16px 10px 10px; border: 1px solid var(--line-strong); }
+  .resurface__arr { width: 34px; height: 34px; display: grid; place-items: center; background: var(--ink); color: var(--bg); font-size: 20px; transition: transform 0.4s var(--ease-out), background 0.2s; }
+  .resurface:hover .resurface__arr { transform: translateY(-6px); background: var(--accent); color: var(--on-accent); }
+  .foot__links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
+  .foot__name {
+    display: flex; flex-wrap: wrap; gap: 0 0.22em; padding-inline: var(--pad); margin: clamp(40px, 8vh, 90px) 0 24px;
+    font-size: clamp(64px, 15.5vw, 280px); font-weight: 300; letter-spacing: -0.065em; line-height: 0.82;
+  }
+  .foot__meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px 24px; }
+</style>

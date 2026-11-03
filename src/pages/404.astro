@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="File not found" page="404">
+  <section class="nf wrap">
+    <div class="win nf__win">
+      <div class="win__bar"><span class="win__dots"><i></i><i></i><i></i></span><span>error.log</span></div>
+      <div class="nf__body">
+        <p class="t-pixel nf__code">404</p>
+        <p class="t-lead">This file was never written, or it’s buried deeper than I dug.</p>
+        <p class="t-mono t-faint">{'C:' + Astro.url.pathname.split('/').join(String.fromCharCode(92))} — not found</p>
+        <a class="btn btn--solid" href="/">Back to the surface <span class="arr">↑</span></a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 100svh; display: grid; place-items: center; padding-block: 80px; }
+  .nf__win { width: min(560px, 100%); }
+  .nf__body { padding: 28px; display: grid; gap: 16px; justify-items: start; }
+  .nf__code { font-size: clamp(80px, 14vw, 160px); line-height: 0.9; color: var(--accent-ink); }
+</style>

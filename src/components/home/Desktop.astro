@@ -1,0 +1,108 @@
+---
+import { site } from '../../data/site';
+const icons = [
+  { label: 'Case studies', href: '#work', glyph: '▤' },
+  { label: '3D_WORLD', href: '/3d', glyph: '▣' },
+  { label: 'Letters', href: '#letters', glyph: '✉' },
+  ...(site.resume ? [{ label: 'Résumé.pdf', href: site.resume, glyph: '▦' }] : []),
+];
+---
+
+<section id="about" class="desk" aria-labelledby="about-title">
+  <header class="desk__head wrap">
+    <p class="t-mono"><span class="t-accent">Index 002</span> <span class="t-faint">/</span> Desktop</p>
+    <h2 id="about-title" class="t-h1" data-split>The person in front<br /><span class="t-faint">of the screen.</span></h2>
+    <p class="t-mono t-faint desk__hint">Windows are draggable. It’s a desktop, after all.</p>
+  </header>
+
+  <div class="desk__area wrap">
+    <nav class="desk__icons" aria-label="Desktop shortcuts">
+      {icons.map((i) => (
+        <a href={i.href} class="icon" data-cursor="link">
+          <span class="icon__glyph t-pixel" aria-hidden="true">{i.glyph}</span>
+          <span class="icon__label t-mono">{i.label}</span>
+        </a>
+      ))}
+    </nav>
+
+    <article class="win dwin" data-win style="--x:4%; --y:2%; --w:min(560px, 100%)">
+      <div class="win__bar" data-drag data-cursor="label:drag"><span class="win__dots"><i></i><i></i><i></i></span><span>README.txt</span></div>
+      <div class="dwin__body readme">
+        <p class="t-lead">Hi, I’m {site.name.split(' ')[0]}. I like the slow part of design.</p>
+        <p>Reading hundreds of app reviews. Talking with relatives about the scams they nearly fell for. Counting what people actually said before deciding what they meant. Then I make it simple.</p>
+        <p>I design mobile flows, wireframes, interactive prototypes and small design systems in Figma, and I care about motion that explains instead of decorates.</p>
+        <p class="t-mono t-dim">{site.education}<br />{site.status}</p>
+      </div>
+    </article>
+
+    <article class="win dwin" data-win style="--x:52%; --y:0%; --w:min(440px, 100%)">
+      <div class="win__bar" data-drag data-cursor="label:drag"><span class="win__dots"><i></i><i></i><i></i></span><span>how_i_work.md</span></div>
+      <ol class="dwin__body rules">
+        <li><b>Dig before drawing.</b> Every project starts with evidence: reviews, interviews, observation.</li>
+        <li><b>Every number traces back.</b> If a stat is on a slide, there’s a row in a spreadsheet behind it.</li>
+        <li><b>Say what’s real.</b> Simulated data gets a label. A review round isn’t called a user test.</li>
+        <li><b>Motion with a job.</b> One gesture, one spring, and it has to explain something.</li>
+      </ol>
+    </article>
+
+    <article class="win dwin" data-win style="--x:30%; --y:52%; --w:min(400px, 100%)">
+      <div class="win__bar" data-drag data-cursor="label:drag"><span class="win__dots"><i></i><i></i><i></i></span><span>system.info</span></div>
+      <dl class="dwin__body sysinfo t-mono">
+        <div><dt>Research</dt><dd>Interviews · surveys · review mining · coding &amp; affinity mapping · heuristic review · cognitive walkthrough</dd></div>
+        <div><dt>Design</dt><dd>User flows · wireframes · visual specs · interactive prototypes · design systems</dd></div>
+        <div><dt>Tools</dt><dd>Figma (variables, components, Smart Animate) · FigJam</dd></div>
+        <div><dt>Motion</dt><dd>Springs, easing, one-gesture interactions</dd></div>
+        <div><dt>3D</dt><dd>Environments · lighting · mood · <a class="link-u t-accent" href="/3d">17 renders →</a></dd></div>
+      </dl>
+    </article>
+
+    <article class="win dwin dwin--note" data-win style="--x:72%; --y:58%; --w:min(260px, 100%)">
+      <div class="win__bar" data-drag data-cursor="label:drag"><span class="win__dots"><i></i><i></i><i></i></span><span>now.txt</span></div>
+      <div class="dwin__body t-mono">
+        <p><span class="t-faint">Looking for</span><br />Summer 2027 UX internship</p>
+        <p><span class="t-faint">Timezone</span><br />{site.tzLabel} · UTC+5:30</p>
+        <p><span class="t-faint">Best way to reach me</span><br /><a class="link-u" href="#letters">Write a letter ↓</a></p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<style>
+  .desk { position: relative; z-index: 2; background: var(--bg); padding: clamp(96px, 14vh, 160px) 0 clamp(80px, 10vh, 120px); border-top: 1px solid var(--line); }
+  .desk__head { display: grid; gap: 20px; margin-bottom: 40px; }
+  .desk__area {
+    position: relative; min-height: 760px;
+    background-image: radial-gradient(var(--line) 1px, transparent 1.2px);
+    background-size: 16px 16px; background-position: var(--pad) 0;
+  }
+  .desk__icons { position: absolute; left: var(--pad); top: 0; display: grid; gap: 18px; z-index: 1; }
+  .icon { display: grid; justify-items: center; gap: 6px; width: 92px; padding: 8px 4px; }
+  .icon__glyph { width: 48px; height: 48px; display: grid; place-items: center; font-size: 30px; border: 1px solid var(--line-strong); background: var(--bg); transition: background 0.2s, color 0.2s; }
+  .icon__label { font-size: 10px; text-align: center; padding: 2px 4px; }
+  .icon:hover .icon__glyph { background: var(--ink); color: var(--bg); }
+  .icon:hover .icon__label { background: var(--accent); color: var(--on-accent); }
+
+  .dwin { position: absolute; left: calc(var(--x) + 120px); top: var(--y); width: var(--w); z-index: 2; touch-action: none; }
+  .dwin.is-dragging { box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.45); }
+  .dwin .win__bar { cursor: grab; }
+  .dwin__body { padding: 18px 20px 20px; font-size: 15px; line-height: 1.55; }
+  .readme { display: grid; gap: 12px; }
+  .rules { display: grid; gap: 12px; padding-left: 36px; }
+  .rules li::marker { font-family: var(--font-pixel); color: var(--accent-ink); }
+  .rules b { font-weight: 550; }
+  .sysinfo { display: grid; gap: 10px; font-size: 11px; text-transform: none; letter-spacing: 0.01em; }
+  .sysinfo div { display: grid; grid-template-columns: 74px 1fr; gap: 10px; }
+  .sysinfo dt { color: var(--ink-3); text-transform: uppercase; }
+  .dwin--note .dwin__body { display: grid; gap: 12px; font-size: 11px; text-transform: none; }
+  .dwin--note { background: var(--accent); color: var(--on-accent); }
+  .dwin--note .t-faint { color: color-mix(in srgb, var(--on-accent) 55%, transparent); }
+  .dwin--note .win__bar span:not(.win__dots) { background: var(--accent); }
+  .dwin--note .win__bar { border-color: var(--on-accent); background: repeating-linear-gradient(0deg, transparent 0 3px, rgb(0 0 0 / 0.18) 3px 4px); }
+
+  @media (max-width: 1000px) {
+    .desk__area { min-height: 0; display: grid; gap: 18px; }
+    .desk__icons { position: static; grid-auto-flow: column; justify-content: start; }
+    .dwin { position: relative; left: 0 !important; top: 0 !important; width: 100%; transform: none !important; }
+    .desk__hint { display: none; }
+  }
+</style>

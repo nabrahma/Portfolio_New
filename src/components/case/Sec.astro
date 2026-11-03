@@ -1,0 +1,11 @@
+---
+// A numbered section. `band` makes it a full-bleed dark band.
+interface Props { id: string; n: string; label: string; title?: string; band?: boolean }
+const { id, n, label, title, band = false } = Astro.props;
+---
+
+<section id={id} class:list={['cs-sec', { 'cs-band': band }]} aria-labelledby={title ? `${id}-h` : undefined}>
+  <p class="cs-sec__label t-mono"><span class="n">{n}</span>{label}</p>
+  {title && <h2 id={`${id}-h`} class="t-h2" data-split>{title}</h2>}
+  <slot />
+</section>
