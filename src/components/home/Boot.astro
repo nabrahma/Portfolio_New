@@ -1,20 +1,13 @@
 ---
 // First visit per session: a quiet title card on ink. The name rises in either side of a
-// render that resolves from big pixels to sharp (the same reveal the case-study images use),
-// and once the world is built the card breaks up in the page-wipe cells (src/scripts/boot.ts).
-import { getImage } from 'astro:assets';
-import river from '../../assets/3d/river.jpg';
-
-const shot = await getImage({ src: river, width: 480, format: 'webp' });
+// pixel-type counter that runs 000 → 100 while the world is built, then the card breaks up
+// in the page-wipe cells, outward from the middle (src/scripts/boot.ts).
 ---
 
 <div class="boot" data-boot aria-hidden="true">
   <div class="boot__card">
     <p class="boot__name is-left t-h2" data-boot-name>Nabaskar</p>
-    <div class="boot__shot" data-boot-shot>
-      <img src={shot.src} width="240" height="300" alt="" loading="eager" fetchpriority="high" decoding="async" />
-      <canvas></canvas>
-    </div>
+    <p class="boot__count t-pixel" data-boot-count>000</p>
     <p class="boot__name is-right t-h2" data-boot-name>Brahma</p>
   </div>
   <p class="boot__caption t-pixel" data-boot-caption><span>NB—OS</span> design · motion · 3D</p>
@@ -28,16 +21,12 @@ const shot = await getImage({ src: river, width: 480, format: 'webp' });
     animation: boot-failsafe 0s 9s forwards; /* if the script never runs, never trap the page */
   }
   @keyframes boot-failsafe { to { visibility: hidden; } }
-  .boot__card { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 36px); }
+  .boot__card { display: flex; align-items: center; gap: clamp(18px, 3vw, 48px); }
   .boot__name { margin: 0; opacity: 0; white-space: nowrap; }
-  .boot__name.is-left { text-align: right; }
-  .boot__shot {
-    position: relative; width: clamp(110px, 17vh, 190px); aspect-ratio: 4 / 5; overflow: hidden;
-    background: color-mix(in srgb, var(--bg) 8%, var(--ink));
+  .boot__count {
+    margin: 0; font-size: clamp(64px, 11vw, 168px); line-height: 0.8;
+    font-variant-numeric: tabular-nums; opacity: 0;
   }
-  .boot__shot img, .boot__shot canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .boot__shot img { opacity: 0; }
-  .boot__shot canvas { image-rendering: pixelated; }
   .boot__caption {
     position: absolute; left: 50%; bottom: clamp(24px, 6vh, 56px); translate: -50% 0; margin: 0;
     font-size: 12px; letter-spacing: 0.04em; opacity: 0; white-space: nowrap;
@@ -48,6 +37,5 @@ const shot = await getImage({ src: river, width: 480, format: 'webp' });
   :global([data-theme='dark']) .boot__caption span { color: color-mix(in srgb, var(--accent) 50%, #000); }
   @media (max-width: 560px) {
     .boot__card { flex-direction: column; gap: 14px; }
-    .boot__name.is-left, .boot__name.is-right { text-align: center; }
   }
 </style>

@@ -159,8 +159,9 @@ export async function wipeIn(ready: Promise<unknown> = Promise.resolve()) {
   });
 }
 
-/** Covers the screen in ink cells, runs `swap` underneath, then dissolves the cells bottom-up. */
-export async function uncover(swap: () => void) {
+/** Covers the screen in ink cells, runs `swap` underneath, then dissolves the cells:
+ *  bottom-up like the page wipe, or outward from the middle of the screen. */
+export async function uncover(swap: () => void, from: 'bottom' | 'centre' = 'bottom') {
   const cell = innerWidth < 700 ? 28 : 40;
   const { c, g, cols, rows } = setup(cell);
   const ink = cssVar('--ink');
@@ -169,8 +170,13 @@ export async function uncover(swap: () => void) {
   swap();
   c.style.background = 'transparent';
   const t = new Float32Array(cols * rows);
-  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) t[j * cols + i] = (rows - 1 - j) / rows * 0.7 + Math.random() * 0.3;
-  await run(520, (p) => {
+  const cx = (cols - 1) / 2, cy = (rows - 1) / 2, far = Math.hypot(cx, cy) || 1;
+  for (let j = 0; j < rows; j++)
+    for (let i = 0; i < cols; i++)
+      t[j * cols + i] = from === 'centre'
+        ? Math.hypot(i - cx, j - cy) / far * 0.72 + Math.random() * 0.28
+        : (rows - 1 - j) / rows * 0.7 + Math.random() * 0.3;
+  await run(from === 'centre' ? 640 : 520, (p) => {
     g.clearRect(0, 0, innerWidth, innerHeight);
     g.fillStyle = ink;
     for (let k = 0; k < t.length; k++) if (t[k] > p) g.fillRect((k % cols) * cell, Math.floor(k / cols) * cell, cell, cell);
