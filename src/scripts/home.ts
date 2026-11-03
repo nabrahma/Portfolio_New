@@ -5,7 +5,9 @@ import { sfx } from './sound';
 import type { World } from './world';
 
 export async function initHome() {
-  const booting = runBoot();
+  const boot = runBoot();
+  void import('./world'); // start fetching now; building it waits until the title card sits still
+  await boot.shown;
   const world = await startWorld();
   initDrawer();
   initList();
@@ -13,7 +15,7 @@ export async function initHome() {
   initStrip();
   initResurface();
   dispatchEvent(new Event('nb:ready'));
-  await booting;
+  await boot.done;
   await revealed;
   heroIntro();
   (await import('./letter')).initLetter();

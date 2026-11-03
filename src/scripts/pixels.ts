@@ -153,14 +153,21 @@ export async function wipeIn(ready: Promise<unknown> = Promise.resolve()) {
   await Promise.race([ready, wait(2500)]);
   await frame();
   await frame();
+  await uncover(() => {
+    html.classList.remove('is-arriving');
+    markRevealed();
+  });
+}
+
+/** Covers the screen in ink cells, runs `swap` underneath, then dissolves the cells bottom-up. */
+export async function uncover(swap: () => void) {
   const cell = innerWidth < 700 ? 28 : 40;
   const { c, g, cols, rows } = setup(cell);
   const ink = cssVar('--ink');
   g.fillStyle = ink;
   g.fillRect(0, 0, innerWidth, innerHeight);
-  html.classList.remove('is-arriving');
+  swap();
   c.style.background = 'transparent';
-  markRevealed();
   const t = new Float32Array(cols * rows);
   for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) t[j * cols + i] = (rows - 1 - j) / rows * 0.7 + Math.random() * 0.3;
   await run(520, (p) => {

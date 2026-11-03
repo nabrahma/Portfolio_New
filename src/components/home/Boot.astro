@@ -1,94 +1,53 @@
 ---
-// First visit per session: the screen is a dead CRT channel, buzzing with fine pixel static
-// while the world loads. When it's ready the static is pulled into a black hole at the centre,
-// and the page comes back out of it (src/scripts/boot.ts).
+// First visit per session: a quiet title card on ink. The name rises in either side of a
+// render that resolves from big pixels to sharp (the same reveal the case-study images use),
+// and once the world is built the card breaks up in the page-wipe cells (src/scripts/boot.ts).
+import { getImage } from 'astro:assets';
+import river from '../../assets/3d/river.jpg';
+
+const shot = await getImage({ src: river, width: 480, format: 'webp' });
 ---
 
 <div class="boot" data-boot aria-hidden="true">
-  <div class="boot__noise is-a"></div>
-  <div class="boot__noise is-b"></div>
-  <div class="boot__roll"></div>
-  <div class="boot__scan"></div>
-  <p class="boot__label t-pixel"><span>NB—OS</span> <span class="t-faint">tuning</span> <span class="tnum" data-boot-pct>00</span></p>
-  <canvas class="boot__fx"></canvas>
+  <div class="boot__card">
+    <p class="boot__name is-left t-h2" data-boot-name>Nabaskar</p>
+    <div class="boot__shot" data-boot-shot>
+      <img src={shot.src} width="240" height="300" alt="" loading="eager" fetchpriority="high" decoding="async" />
+      <canvas></canvas>
+    </div>
+    <p class="boot__name is-right t-h2" data-boot-name>Brahma</p>
+  </div>
+  <p class="boot__caption t-pixel" data-boot-caption><span>NB—OS</span> design · motion · 3D</p>
 </div>
-
-<script is:inline>
-  // Paint the static texture before first paint, so the buzz is there from the very first frame.
-  (function () {
-    var d = document.documentElement;
-    if (!d.classList.contains('is-booting')) return;
-    var css = getComputedStyle(d);
-    var ink = css.getPropertyValue('--ink').trim() || '#0b0b0b';
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var size = 420, cell = 3;
-    function tile(seed) {
-      var c = document.createElement('canvas');
-      c.width = c.height = size * dpr;
-      var g = c.getContext('2d');
-      g.scale(dpr, dpr);
-      g.fillStyle = ink;
-      var s = seed;
-      function rnd() { s = (s * 16807) % 2147483647; return s / 2147483647; }
-      for (var y = 0; y < size; y += cell)
-        for (var x = 0; x < size; x += cell) {
-          var r = rnd();
-          if (r < 0.46) { g.globalAlpha = 0.18 + rnd() * 0.82; g.fillRect(x, y, cell - 0.6, cell - 0.6); }
-        }
-      return c.toDataURL();
-    }
-    d.style.setProperty('--noise-a', 'url(' + tile(7919) + ')');
-    d.style.setProperty('--noise-b', 'url(' + tile(104729) + ')');
-  })();
-</script>
 
 <style>
   .boot { display: none; }
   :global(.is-booting) .boot {
-    display: block; position: fixed; inset: 0; z-index: 9500; overflow: hidden;
-    background: var(--bg); color: var(--ink); cursor: progress;
+    display: grid; place-items: center; position: fixed; inset: 0; z-index: 9500; overflow: hidden;
+    background: var(--ink); color: var(--bg); cursor: progress;
     animation: boot-failsafe 0s 9s forwards; /* if the script never runs, never trap the page */
   }
   @keyframes boot-failsafe { to { visibility: hidden; } }
-  /* two layers of static, each jumping between random offsets on its own beat: the buzz.
-     transforms only, so it keeps flickering even while the main thread builds the world */
-  .boot__noise {
-    position: absolute; inset: -60%; background-size: 420px 420px; image-rendering: pixelated;
-    will-change: transform; opacity: 0.85;
+  .boot__card { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 36px); }
+  .boot__name { margin: 0; opacity: 0; white-space: nowrap; }
+  .boot__name.is-left { text-align: right; }
+  .boot__shot {
+    position: relative; width: clamp(110px, 17vh, 190px); aspect-ratio: 4 / 5; overflow: hidden;
+    background: color-mix(in srgb, var(--bg) 8%, var(--ink));
   }
-  .boot__noise.is-a { background-image: var(--noise-a); animation: boot-jitter 0.36s steps(1) infinite; }
-  .boot__noise.is-b { background-image: var(--noise-b); animation: boot-jitter 0.5s steps(1) infinite reverse; opacity: 0.55; mix-blend-mode: multiply; }
-  :global([data-theme='dark']) .boot__noise.is-b { mix-blend-mode: screen; }
-  @keyframes boot-jitter {
-    0% { transform: translate(0, 0); }
-    12% { transform: translate(-31%, 7%); }
-    25% { transform: translate(13%, -22%); }
-    37% { transform: translate(-9%, 19%); }
-    50% { transform: translate(24%, 11%); }
-    62% { transform: translate(-18%, -14%); }
-    75% { transform: translate(6%, 27%); }
-    87% { transform: translate(-27%, -4%); }
+  .boot__shot img, .boot__shot canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .boot__shot img { opacity: 0; }
+  .boot__shot canvas { image-rendering: pixelated; }
+  .boot__caption {
+    position: absolute; left: 50%; bottom: clamp(24px, 6vh, 56px); translate: -50% 0; margin: 0;
+    font-size: 12px; letter-spacing: 0.04em; opacity: 0; white-space: nowrap;
+    color: color-mix(in srgb, var(--bg) 60%, var(--ink));
   }
-  /* the slow bright band an old set rolls down the picture */
-  .boot__roll {
-    position: absolute; left: 0; right: 0; top: -30%; height: 30%; pointer-events: none;
-    background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 55%, transparent) 50%, transparent);
-    animation: boot-roll 3.4s linear infinite; will-change: transform;
+  .boot__caption span { color: var(--accent); }
+  /* the card is inverted, so in dark mode it sits on light ink: deepen the accent to stay legible */
+  :global([data-theme='dark']) .boot__caption span { color: color-mix(in srgb, var(--accent) 50%, #000); }
+  @media (max-width: 560px) {
+    .boot__card { flex-direction: column; gap: 14px; }
+    .boot__name.is-left, .boot__name.is-right { text-align: center; }
   }
-  @keyframes boot-roll { to { transform: translateY(440%); } }
-  /* scanlines, a curved-glass vignette, and the tube's faint flicker */
-  .boot__scan {
-    position: absolute; inset: 0; pointer-events: none;
-    background:
-      repeating-linear-gradient(to bottom, transparent 0 2px, color-mix(in srgb, var(--bg) 60%, transparent) 2px 3px),
-      radial-gradient(ellipse at center, transparent 55%, color-mix(in srgb, var(--bg) 85%, transparent) 100%);
-    animation: boot-flicker 0.12s steps(2) infinite;
-  }
-  @keyframes boot-flicker { 50% { opacity: 0.86; } }
-  .boot__label {
-    position: absolute; left: 50%; top: 50%; translate: -50% -50%; z-index: 1;
-    padding: 6px 10px; background: var(--bg); font-size: 13px; letter-spacing: 0.04em; white-space: nowrap;
-  }
-  .boot__label span:first-child { color: var(--accent-ink); }
-  .boot__fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 </style>
