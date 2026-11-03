@@ -1,7 +1,7 @@
 ---
 // First visit per session: a quiet title card on ink. The name rises in either side of a
-// pixel-type counter that runs 000 → 100 while the world is built, then the card breaks up
-// in the page-wipe cells, outward from the middle (src/scripts/boot.ts).
+// pixel-type counter that runs 000 → 100 at its own pace once the world is built, then the
+// card breaks up in the page-wipe cells, outward from the middle (src/scripts/boot.ts).
 ---
 
 <div class="boot" data-boot aria-hidden="true">
@@ -10,7 +10,6 @@
     <p class="boot__count t-pixel" data-boot-count>000</p>
     <p class="boot__name is-right t-h2" data-boot-name>Brahma</p>
   </div>
-  <p class="boot__caption t-pixel" data-boot-caption><span>NB—OS</span> design · motion · 3D</p>
 </div>
 
 <style>
@@ -25,16 +24,8 @@
   .boot__name { margin: 0; opacity: 0; white-space: nowrap; }
   .boot__count {
     margin: 0; font-size: clamp(64px, 11vw, 168px); line-height: 0.8;
-    font-variant-numeric: tabular-nums; opacity: 0;
+    font-variant-numeric: tabular-nums;
   }
-  .boot__caption {
-    position: absolute; left: 50%; bottom: clamp(24px, 6vh, 56px); translate: -50% 0; margin: 0;
-    font-size: 12px; letter-spacing: 0.04em; opacity: 0; white-space: nowrap;
-    color: color-mix(in srgb, var(--bg) 60%, var(--ink));
-  }
-  .boot__caption span { color: var(--accent); }
-  /* the card is inverted, so in dark mode it sits on light ink: deepen the accent to stay legible */
-  :global([data-theme='dark']) .boot__caption span { color: color-mix(in srgb, var(--accent) 50%, #000); }
   @media (max-width: 560px) {
     .boot__card { flex-direction: column; gap: 14px; }
   }

@@ -15,6 +15,13 @@ export async function initHome() {
   initStrip();
   initResurface();
   dispatchEvent(new Event('nb:ready'));
+  if (boot.active && world) {
+    // the card covers the world: let it draw one frame (compiling its shaders), then rest it
+    // until the card breaks up, so the counter has the main thread to itself
+    await new Promise((r) => requestAnimationFrame(r));
+    world.setRunning(false);
+    void boot.done.then(() => world.setRunning(true));
+  }
   await boot.done;
   await revealed;
   heroIntro();
