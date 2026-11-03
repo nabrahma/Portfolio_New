@@ -48,12 +48,13 @@ export function runBoot() {
     // The counter stays on top a moment, light on ink, so it breaks up with the cells around it.
     void uncover(() => {
       el.style.background = 'transparent';
+      html.classList.add('is-boot-out'); // the bars and the page background come back under the cells
       el.style.pointerEvents = 'none';
       gsap.to(count, { opacity: 0, duration: 0.3, ease: 'steps(3)', delay: 0.08 });
       lenis?.start();
     }, 'centre').then(() => {
       el.remove();
-      html.classList.remove('is-booting');
+      html.classList.remove('is-booting', 'is-boot-out');
     });
   })();
 

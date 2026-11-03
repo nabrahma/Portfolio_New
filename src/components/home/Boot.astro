@@ -20,6 +20,13 @@
     animation: boot-failsafe 0s 9s forwards; /* if the script never runs, never trap the page */
   }
   @keyframes boot-failsafe { to { visibility: hidden; } }
+  /* nothing of the page may show around the card: the bars stay hidden until it breaks up, and
+     the root background is ink too, so a strip the browser hasn't repainted yet still matches */
+  :global(html.is-booting:not(.is-boot-out)) :global(:is(.menubar, .statusbar)) { visibility: hidden; animation: boot-bars 0s 9s forwards; }
+  :global(html.is-booting:not(.is-boot-out)) :global(body) { background: var(--ink); animation: boot-body 0s 9s forwards; }
+  /* the same failsafe for these two */
+  @keyframes boot-bars { to { visibility: visible; } }
+  @keyframes boot-body { to { background: var(--bg); } }
   .boot__card { display: flex; align-items: center; gap: clamp(18px, 3vw, 48px); }
   .boot__name { margin: 0; opacity: 0; white-space: nowrap; }
   .boot__count {
