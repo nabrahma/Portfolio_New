@@ -153,7 +153,8 @@ function folderPath(tx: number, tw: number) {
   .is-filler .folder__tab span { overflow: hidden; text-overflow: ellipsis; }
   .is-real .folder__tab { color: var(--bg); font-size: 13.5px; letter-spacing: 0.02em; text-transform: uppercase; }
   .folder__paper {
-    position: absolute; z-index: 1; left: calc(var(--tx) - 2%); width: min(300px, 56%); top: 36px; height: 110px;
+    position: absolute; z-index: 1; width: min(300px, 56%); top: 36px; height: 110px;
+    left: min(calc(var(--tx) - 2%), calc(100% - min(300px, 56%))); /* under its tab, but never past the folder's edge */
     background: var(--tint); border: 1px solid var(--ink); overflow: hidden;
     transform: translateY(0); transition: transform 0.55s var(--ease-drawer);
   }

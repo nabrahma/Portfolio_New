@@ -102,7 +102,19 @@ const icons = [
   @media (max-width: 1000px) {
     .desk__area { min-height: 0; display: grid; gap: 18px; }
     .desk__icons { position: static; grid-auto-flow: column; justify-content: start; }
-    .dwin { position: relative; left: 0 !important; top: 0 !important; width: 100%; transform: none !important; }
+    /* stacked, not draggable: let a finger on a window scroll the page */
+    .dwin { position: relative; left: 0 !important; top: 0 !important; width: 100%; transform: none !important; touch-action: auto; }
+    .dwin .win__bar { cursor: default; }
     .desk__hint { display: none; }
+  }
+  @media (max-width: 560px) {
+    /* the icons share the row instead of pushing the page wider than the phone */
+    .desk__icons { grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 4px; }
+    .icon { width: auto; padding: 6px 0; }
+    .icon__glyph { width: 44px; height: 44px; font-size: 26px; }
+    .icon__label { font-size: 9px; padding: 2px 0; overflow-wrap: anywhere; }
+    .dwin { min-width: 0; }
+    .dwin__body { padding: 16px; font-size: 14px; }
+    .rules { padding-left: 34px; }
   }
 </style>

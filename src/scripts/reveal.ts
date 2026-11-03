@@ -1,6 +1,7 @@
 import { gsap, ScrollTrigger, SplitText, reduced, $$ } from './core';
 
 export function initReveals() {
+  labelTables();
   initScramble();
   if (reduced) {
     $$('[data-count]').forEach((el) => (el.textContent = el.dataset.count!));
@@ -12,6 +13,16 @@ export function initReveals() {
   initPixelImages();
   initParallax();
   initBars();
+}
+
+/* each cell carries its column name, so on a phone a row can stack into a card (case.css) */
+function labelTables() {
+  $$('.cs-table').forEach((t) => {
+    const heads = $$('thead th', t).map((th) => th.textContent!.trim());
+    $$('tbody tr', t).forEach((tr) => Array.from(tr.children).forEach((td, i) => {
+      if (heads[i]) (td as HTMLElement).dataset.label = heads[i];
+    }));
+  });
 }
 
 /* fade-up blocks */

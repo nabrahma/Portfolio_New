@@ -111,6 +111,33 @@
 .cs-table td:first-child { color: var(--ink); }
 .cs-table tr { transition: background 0.2s; }
 .cs-table tbody tr:hover { background: var(--bg-2); }
+@media (max-width: 640px) {
+  /* rows become small cards: the first cell is the title, the rest are labelled lines */
+  .cs-table-wrap { overflow: visible; }
+  .cs-table { min-width: 0; font-size: 14px; }
+  .cs-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .cs-table, .cs-table tbody { display: block; }
+  .cs-table tr { display: grid; gap: 6px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  /* the label hangs in a left gutter, so the cell's own text and badges flow as normal */
+  .cs-table td { display: block; position: relative; padding: 0 0 0 calc(7.5em + 12px); border: 0; }
+  .cs-table td::before {
+    content: attr(data-label); position: absolute; left: 0; top: 0; width: 7.5em;
+    font: 500 10px/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); padding-top: 2px;
+  }
+  .cs-table td:first-child { font-weight: 500; }
+  .cs-table td:not([data-label]) { padding-left: 0; }
+  .cs-table td:not([data-label])::before { content: none; }
+  .cs-table td:empty { display: none; }
+  /* a comparison grid stays a grid: it scrolls sideways with the first column pinned */
+  .cs-table-wrap:has(.cs-table--matrix) { overflow-x: auto; }
+  .cs-table.cs-table--matrix { display: table; min-width: 560px; font-size: 13px; }
+  .cs-table--matrix thead { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+  .cs-table--matrix tbody { display: table-row-group; }
+  .cs-table--matrix tr { display: table-row; padding: 0; }
+  .cs-table--matrix td { display: table-cell; position: static; padding: 12px 10px 12px 0; border-bottom: 1px solid var(--line); }
+  .cs-table--matrix td::before { content: none; }
+  .cs-table--matrix :is(th, td):first-child { position: sticky; left: 0; z-index: 1; background: var(--bg); min-width: 8.5em; }
+}
 .verdict { display: inline-block; padding: 4px 8px; font: 500 10.5px/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid var(--line-strong); white-space: nowrap; }
 .verdict--yes { background: var(--ink); color: var(--bg); }
 .verdict--acc { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
@@ -203,6 +230,8 @@
   .cs-stat + .cs-stat { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
   .bar { grid-template-columns: 1fr 44px; }
   .bar__l { grid-column: 1 / -1; }
-  .funnel__row { grid-template-columns: 80px 1fr; }
-  .funnel__bar { font-size: 12px; white-space: normal; }
+  .funnel__row { grid-template-columns: 64px 1fr; gap: 12px; }
+  .funnel__n { font-size: 18px; }
+  /* the bar keeps its true length; the label runs on past it instead of wrapping inside it */
+  .funnel__bar { height: 36px; padding: 0 10px; font-size: 12px; overflow: visible; }
 }
