@@ -1,5 +1,6 @@
 import { cssVar, gsap, lenis, reduced, finePointer, scrollToTarget, ScrollTrigger, SplitText, $, $$ } from './core';
 import { revealed, wipeOut } from './pixels';
+import { runBoot } from './boot';
 import { sfx } from './sound';
 import type { World } from './world';
 
@@ -17,33 +18,6 @@ export async function initHome() {
   heroIntro();
   (await import('./letter')).initLetter();
   void world;
-}
-
-/* ---------------- boot ---------------- */
-async function runBoot() {
-  const el = $('[data-boot]');
-  if (!el || reduced || sessionStorage.getItem('nb-booted') || location.hash) return;
-  sessionStorage.setItem('nb-booted', '1');
-  el.hidden = false;
-  lenis?.stop();
-  const lines = $$('.boot__line', el);
-  const bar = $('[data-boot-bar]', el)!;
-  let skip = false;
-  const skipper = () => (skip = true);
-  addEventListener('pointerdown', skipper, { once: true });
-  addEventListener('keydown', skipper, { once: true });
-  const tl = gsap.timeline();
-  lines.forEach((l, i) => tl.to(l, { opacity: 1, duration: 0.01 }, i * 0.16));
-  tl.to(bar, { width: '100%', duration: lines.length * 0.16 + 0.3, ease: 'steps(14)' }, 0);
-  sfx.boot();
-  await new Promise<void>((res) => {
-    const check = () => (skip || !tl.isActive() ? res() : requestAnimationFrame(check));
-    requestAnimationFrame(check);
-  });
-  tl.progress(1);
-  await gsap.to(el, { clipPath: 'inset(0 0 100% 0)', duration: 0.5, ease: 'steps(10)' });
-  el.remove();
-  lenis?.start();
 }
 
 /* ---------------- the world ---------------- */

@@ -45,7 +45,10 @@ const og = ogImage ? new URL(ogImage, Astro.site).href : undefined;
         var p = s.getItem('nb-phosphor');
         if (p && p !== 'green') d.dataset.phosphor = p;
         d.classList.add('js');
-        if (sessionStorage.getItem('nb-wipe') === '1' && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('is-arriving');
+        var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (sessionStorage.getItem('nb-wipe') === '1' && !still) d.classList.add('is-arriving');
+        // first visit to the home page this session: the CRT boot covers the page from first paint
+        if (d.dataset.page === 'home' && !still && !location.hash && !sessionStorage.getItem('nb-booted')) d.classList.add('is-booting');
         // Landing: the site decides where a page opens, not the browser. A reload starts at the
         // top, so drop a section hash before the browser jumps to it (/letter and /3d hashes are data).
         try {
