@@ -58,6 +58,10 @@ const imgs = await Promise.all(featured.map((r) => getImage({ src: r.image, widt
     padding: 24px var(--pad); width: max-content; will-change: transform;
   }
   .w3d__card { flex: none; height: min(64svh, 620px); }
+  /* the drum (home.ts, initStrip): cards turn as they pass the middle */
+  .w3d__pin.is-drum { perspective: 1600px; }
+  .w3d__pin.is-drum .w3d__track { transform-style: preserve-3d; }
+  .w3d__pin.is-drum .w3d__card { will-change: transform; }
   .w3d__card--intro { width: min(46vw, 520px); height: auto; margin: 0; }
   .w3d__card--intro .ascii { width: 100%; aspect-ratio: 4 / 3; }
   .w3d__card--intro figcaption { padding: 10px 12px; border-top: 1px solid var(--line); text-transform: none; }
