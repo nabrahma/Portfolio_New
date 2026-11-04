@@ -230,6 +230,15 @@ html.lenis, html.lenis body { height: auto; }
   .js [data-reveal] { opacity: 1; transform: none; }
 }
 
+/* ---------- touch: no frosted glass over the moving 3D world ----------
+   a backdrop blur has to be redone every frame the canvas behind it changes, which is what makes
+   a phone stutter while scrolling; near-solid panels read the same and cost nothing */
+@media (pointer: coarse) {
+  .menubar, .statusbar, .stratum { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .menubar, .statusbar { background: color-mix(in srgb, var(--bg) 97%, transparent) !important; }
+  .stratum { background: color-mix(in srgb, var(--bg) 93%, transparent) !important; }
+}
+
 /* ---------- touch: give small controls a 44px hit area without changing how they look ---------- */
 @media (pointer: coarse) {
   .menubar a, .menubar button, .tray-btn, .pen, .tool--sm, footer .link-u, .phosphor__swatch { position: relative; }

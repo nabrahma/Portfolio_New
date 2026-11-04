@@ -206,6 +206,7 @@ function folderPath(tx: number, tw: number) {
   .list__row:hover { background: var(--ink); color: var(--bg); padding-left: 20px; }
   .list__row:hover .t-dim { color: var(--ink-3); }
   .list__title { font-size: clamp(24px, 2.6vw, 38px); letter-spacing: -0.035em; line-height: 1; }
+  .archive :is(h2, .t-h1) { text-wrap: balance; }
   .list__line { font-size: 14.5px; line-height: 1.4; }
   .list__peek {
     position: fixed; left: 0; top: 0; z-index: 50; width: 260px; aspect-ratio: 4/3; object-fit: cover; object-position: top;
@@ -219,8 +220,11 @@ function folderPath(tx: number, tw: number) {
     .archive__views { display: none; }
     .archive__body [data-panel='drawer'] { display: none !important; }
     .archive__body [data-panel='list'] { display: block !important; }
-    .list__row { grid-template-columns: 56px 1fr 20px; gap: 10px 14px; }
-    .list__line { grid-column: 2 / 3; }
+    .list__row { grid-template-columns: 1fr 24px; gap: 6px 14px; padding: 20px 4px; }
+    .list__code { grid-column: 1; font-size: 12px; color: var(--ink-3); }
+    .list__title { grid-column: 1; }
+    .list__line { grid-column: 1; }
+    .list__arr { grid-column: 2; grid-row: 1 / 4; align-self: center; font-size: 18px; }
     .list__kind, .list__year { display: none; }
     .list__peek { display: none; }
   }

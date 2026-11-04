@@ -17,8 +17,9 @@ const { page } = Astro.props as { page: string };
 <style>
   .statusbar {
     position: fixed; inset: auto 0 0 0; z-index: 100;
-    height: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    padding-inline: var(--pad);
+    height: calc(28px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding-inline: max(var(--pad), env(safe-area-inset-left)) max(var(--pad), env(safe-area-inset-right));
+    padding-bottom: env(safe-area-inset-bottom); /* the phone's home indicator sits below, not on top */
     border-top: 1px solid var(--line);
     background: color-mix(in srgb, var(--bg) 78%, transparent);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);

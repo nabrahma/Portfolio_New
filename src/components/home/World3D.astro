@@ -41,7 +41,7 @@ const imgs = await Promise.all(featured.map((r) => getImage({ src: r.image, widt
     </div>
     <div class="w3d__meter wrap t-mono" aria-hidden="true">
       <span class="w3d__how">Scroll to run the reel</span>
-      <span class="w3d__swipe">Swipe the reel <span class="arr">→</span></span>
+      <span class="w3d__swipe">Swipe through {featured.length} renders <span class="arr">→</span></span>
       <span class="w3d__bar"><i data-strip-bar></i></span>
       <span class="tnum"><span data-strip-n>01</span> / {String(featured.length).padStart(2, '0')}</span>
     </div>
@@ -94,10 +94,14 @@ const imgs = await Promise.all(featured.map((r) => getImage({ src: r.image, widt
     .w3d__pin::-webkit-scrollbar { display: none; }
     .w3d__card { scroll-snap-align: start; height: 58svh; }
     .w3d__frame { height: 58svh; }
-    .w3d__card--intro { width: 72vw; height: auto; }
+    .w3d__card--intro { display: none; }
+    .w3d__track { gap: 14px; }
+    .w3d__frame, .w3d__frame.is-wide { height: auto; width: 80vw; aspect-ratio: auto; grid-template-rows: auto auto auto; }
+    .w3d__frame .w3d__img { aspect-ratio: 4 / 5; }
+    .w3d__frame.is-wide .w3d__img { aspect-ratio: 4 / 5; }
     .w3d__more { width: 70vw; }
     /* the sideways reel is a swipe here: say so, and pin the hint under the strip */
-    .w3d__meter { position: sticky; left: 0; grid-template-columns: auto; padding-top: 4px; color: var(--ink-3); }
+    .w3d__meter { position: sticky; left: 0; grid-template-columns: auto; padding-top: 6px; color: var(--ink-2); font-size: 12px; }
     .w3d__how, .w3d__bar, .w3d__meter > .tnum { display: none; }
     .w3d__swipe { display: inline; }
   }

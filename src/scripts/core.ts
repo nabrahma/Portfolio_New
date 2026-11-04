@@ -4,6 +4,8 @@ import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
+// a phone's browser bar sliding in and out is a resize; don't re-measure every pin for it
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 export { gsap, ScrollTrigger, SplitText };
 

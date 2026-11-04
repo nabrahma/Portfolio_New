@@ -143,8 +143,14 @@ const ticks = Array.from({ length: 47 }, (_, i) => i);
   .ruler__needle { position: absolute; right: -6px; top: 50%; width: 22px; height: 2px; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
   @media (max-width: 760px) {
-    .descent { height: 440vh; }
-    .stratum.is-left, .stratum.is-right { left: var(--pad); right: auto; inset-block: auto 56px; margin: 0; width: calc(100vw - var(--pad) * 2 - 44px); padding: 18px; gap: 10px; }
+    .descent { height: 380vh; }
+    .stratum.is-left, .stratum.is-right {
+      left: var(--pad); right: auto; margin: 0; padding: 18px; gap: 10px;
+      inset-block: auto calc(15svh + env(safe-area-inset-bottom)); width: calc(100% - var(--pad) * 2 - 34px);
+    }
+    /* a slim rail: ticks and the needle, no numbers to crowd the cards */
+    .ruler { width: 14px; }
+    .ruler__track span { width: 14px; padding: 0; color: transparent; }
     .stratum__body { font-size: 14.5px; }
     .reel { aspect-ratio: 2 / 1; }
   }

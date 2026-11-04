@@ -24,7 +24,7 @@ export async function initHome() {
   }
   await boot.done;
   await revealed;
-  heroIntro();
+  void heroIntro();
   (await import('./letter')).initLetter();
   void world;
 }
@@ -85,6 +85,7 @@ async function startWorld(): Promise<World | null> {
   const fmt = (d: number) => (d >= -0.05 ? '+' : '−') + Math.abs(d).toFixed(1).padStart(5, '0');
   const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
+  const phone = matchMedia('(max-width: 760px)').matches;
   const layStrata = (p: number) => {
     for (const s of strata) {
       const [a, b] = s.at;
@@ -96,11 +97,14 @@ async function startWorld(): Promise<World | null> {
         if (s.video) on ? s.video.play().catch(() => {}) : s.video.pause();
       }
       if (!on) continue;
-      s.build.progress(clamp01(t / 0.32));
-      const out = s.last ? 0 : clamp01((t - 0.8) / 0.2);
-      // slow upward drift while it's on screen: it sits in the soil, the camera keeps sinking
-      const drift = (0.5 - Math.min(t, 1)) * 70 - out * 60;
-      gsap.set(s.el, { opacity: 1 - out, y: drift, filter: out ? `blur(${(out * 6).toFixed(1)}px)` : 'none' });
+      // phones have less scroll per layer, so the card builds faster and holds longer
+      s.build.progress(clamp01(t / (phone ? 0.18 : 0.32)));
+      const out = s.last ? 0 : phone ? clamp01((t - 0.86) / 0.14) : clamp01((t - 0.8) / 0.2);
+      // slow upward drift while it's on screen: it sits in the soil, the camera keeps sinking.
+      // Phones get a shorter drift (the card sits near the bottom bar) and no blur, which is
+      // the expensive part of the exit on a phone's GPU
+      const drift = (0.5 - Math.min(t, 1)) * (phone ? 28 : 70) - out * (phone ? 40 : 60);
+      gsap.set(s.el, { opacity: 1 - out, y: drift, filter: out && !phone ? `blur(${(out * 6).toFixed(1)}px)` : 'none' });
     }
   };
 
@@ -140,9 +144,10 @@ async function startWorld(): Promise<World | null> {
       const camY = d + 0.92;
       const t = Math.min(1, Math.max(0, (camY + 0.35) / 1.1));
       const o = t * t * (3 - 2 * t); // eases out with the field, a touch after it
-      hero.style.transform = `translate3d(0, ${(heroShift + scrollY).toFixed(2)}px, 0)`;
+      const gone = o < 0.01;
+      hero.style.transform = gone ? 'none' : `translate3d(0, ${(heroShift + scrollY).toFixed(2)}px, 0)`;
       hero.style.opacity = o.toFixed(3);
-      hero.style.visibility = o < 0.01 ? 'hidden' : '';
+      hero.style.visibility = gone ? 'hidden' : '';
     }
     if (meter) meter.textContent = fmt(d);
     if (meterLabel) meterLabel.textContent = d >= -0.05 ? 'ALT' : 'DEPTH';
@@ -152,12 +157,20 @@ async function startWorld(): Promise<World | null> {
 }
 
 /* ---------------- hero intro ---------------- */
-function heroIntro() {
+async function heroIntro() {
   if (reduced) return;
   const title = $('.hero__title');
   if (!title) return;
-  const split = SplitText.create(title.children, { type: 'lines', mask: 'lines' });
-  gsap.from(split.lines, { yPercent: 110, duration: 1.3, ease: 'expo.out', stagger: 0.1, delay: 0.1 });
+  // split with the real font in place, or the lines are measured in the fallback and re-wrap later
+  await document.fonts.ready;
+  if (matchMedia('(max-width: 560px)').matches) {
+    // on a phone the headline is one balanced sentence (Hero.astro); splitting it into lines
+    // undoes the balance, so it rises in as one block
+    gsap.from(title, { opacity: 0, y: 28, duration: 1.2, ease: 'expo.out', delay: 0.1 });
+  } else {
+    const split = SplitText.create(title.children, { type: 'lines', mask: 'lines' });
+    gsap.from(split.lines, { yPercent: 110, duration: 1.3, ease: 'expo.out', stagger: 0.1, delay: 0.1 });
+  }
   gsap.from(['.hero__meta', '.hero__intro', '.hero__cta'], { opacity: 0, y: 12, duration: 0.9, ease: 'power3.out', stagger: 0.08, delay: 0.45 });
 }
 

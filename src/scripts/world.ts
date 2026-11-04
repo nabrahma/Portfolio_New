@@ -425,7 +425,10 @@ export function createWorld(canvas: HTMLCanvasElement, opts: { lite: boolean; st
   const dpr = Math.min(devicePixelRatio, opts.lite ? 1.5 : 1.75);
   renderer.setPixelRatio(dpr);
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.05, 400);
+  // the canvas's own box, not the window: on phones it's sized to the large viewport (100lvh),
+  // so the browser bar sliding in and out doesn't resize, re-project or stretch the world
+  const view = { w: canvas.clientWidth || innerWidth, h: canvas.clientHeight || innerHeight };
+  const camera = new THREE.PerspectiveCamera(36, view.w / view.h, 0.05, 400);
 
   const surfaceCam = new THREE.Vector3(2.0, 0.92, 7.9);
   const surfaceLook = new THREE.Vector3(-0.1, 1.3, -3);
@@ -457,7 +460,7 @@ export function createWorld(canvas: HTMLCanvasElement, opts: { lite: boolean; st
     uTime: { value: 0 },
     uPixel: { value: dpr },
     uScale: { value: 1 },
-    uAspect: { value: innerWidth / innerHeight },
+    uAspect: { value: view.w / view.h },
     uMouse: { value: new THREE.Vector2(9, 9) },
     uMouseK: { value: 0 },
     uRipple: { value: new THREE.Vector3(0, 0, 0) },
@@ -525,11 +528,16 @@ export function createWorld(canvas: HTMLCanvasElement, opts: { lite: boolean; st
     probe.lookAt(look);
     probe.updateMatrixWorld();
     pv.set(pos.x, 0, FACE).project(probe);
-    return ((1 - pv.y) / 2) * innerHeight;
+    return ((1 - pv.y) / 2) * view.h;
   }
 
+  let sized = '';
   function resize() {
-    const w = innerWidth, h = innerHeight;
+    const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
+    if (`${w}x${h}` === sized) return; // nothing changed (a phone's bar moving, say)
+    sized = `${w}x${h}`;
+    view.w = w;
+    view.h = h;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     // keep the figure framed on tall phones
@@ -580,7 +588,7 @@ export function createWorld(canvas: HTMLCanvasElement, opts: { lite: boolean; st
     },
     clearHover() { mouse.thk = 0; },
     ripple(cx, cy) {
-      ray.setFromCamera(new THREE.Vector2((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1), camera);
+      ray.setFromCamera(new THREE.Vector2((cx / view.w) * 2 - 1, -(cy / view.h) * 2 + 1), camera);
       const hit = ray.ray.intersectPlane(ground, v);
       if (!hit) return;
       uniforms.uRipple.value.copy(hit);
@@ -595,13 +603,13 @@ export function createWorld(canvas: HTMLCanvasElement, opts: { lite: boolean; st
     setOpacity(o) { uniforms.uOpacity.value = o; canvas.style.opacity = String(Math.min(1, o * 1.5)); },
     project(x, y, z) {
       v.set(x, y, z).project(camera);
-      return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight, visible: v.z < 1 };
+      return { x: (v.x + 1) / 2 * view.w, y: (1 - v.y) / 2 * view.h, visible: v.z < 1 };
     },
     resize,
     depth: () => camPos.y - surfaceCam.y,
     edgeShift() {
       pose(0, restPos, restLook);
-      return Math.max(-innerHeight * 3, edgeY(camPos, camLook) - edgeY(restPos, restLook));
+      return Math.max(-view.h * 3, edgeY(camPos, camLook) - edgeY(restPos, restLook));
     },
     setRunning(on) {
       if (on === running) return;

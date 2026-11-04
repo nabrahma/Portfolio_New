@@ -2,6 +2,7 @@
 // First visit per session: a quiet title card on ink. The name rises in either side of a
 // pixel-type counter that runs 000 → 100 at its own pace once the world is built, then the
 // card breaks up in the page-wipe cells, outward from the middle (src/scripts/boot.ts).
+// On a phone the card stops at 100 first and says the site is built for a bigger screen.
 ---
 
 <div class="boot" data-boot aria-hidden="true">
@@ -9,6 +10,15 @@
     <p class="boot__name is-left t-h2" data-boot-name>Nabaskar</p>
     <p class="boot__count t-pixel" data-boot-count>000</p>
     <p class="boot__name is-right t-h2" data-boot-name>Brahma</p>
+  </div>
+  <div class="boot__note" data-boot-note hidden>
+    <p class="boot__kicker t-mono"><span>NB—OS</span> · best on a bigger screen</p>
+    <h2 class="boot__head t-h3" id="boot-note-title">Best on a desktop.</h2>
+    <p class="boot__text">This site is a 3D world you dig through by scrolling. The phone version works well, it’s just lighter. For the full thing, open it on a laptop.</p>
+    <div class="boot__actions">
+      <button type="button" class="boot__btn is-solid" data-boot-go>Continue on phone <span aria-hidden="true">→</span></button>
+      <button type="button" class="boot__btn" data-boot-send>Send the link to my laptop</button>
+    </div>
   </div>
 </div>
 
@@ -36,4 +46,27 @@
   @media (max-width: 560px) {
     .boot__card { flex-direction: column; gap: 14px; }
   }
+
+  /* the phone note sits in the same spot as the card */
+  .boot__card, .boot__note { grid-area: 1 / 1; }
+  .boot__note {
+    width: min(100% - 2 * var(--pad), 420px); display: grid; gap: 14px; cursor: auto;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .boot__note[hidden] { display: none; }
+  .boot__kicker { margin: 0; font-size: 11px; color: color-mix(in srgb, var(--bg) 60%, var(--ink)); }
+  .boot__kicker span { color: var(--accent); }
+  :global([data-theme='dark']) .boot__kicker span { color: color-mix(in srgb, var(--accent) 50%, #000); }
+  .boot__head { margin: 0; color: var(--bg); }
+  .boot__text { margin: 0; font-size: 15px; line-height: 1.55; color: color-mix(in srgb, var(--bg) 78%, var(--ink)); }
+  .boot__actions { display: grid; gap: 10px; margin-top: 10px; }
+  .boot__btn {
+    min-height: 52px; padding: 0 18px; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font: 500 12px/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--bg); background: transparent; border: 1px solid color-mix(in srgb, var(--bg) 45%, var(--ink));
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .boot__btn.is-solid { background: var(--bg); color: var(--ink); border-color: var(--bg); }
+  .boot__btn:active { transform: translateY(1px); }
+  .boot__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 </style>
