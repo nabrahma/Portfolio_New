@@ -74,6 +74,22 @@ function folderPath(tx: number, tw: number) {
           <span class="drawer__handle"></span>
           <span class="drawer__tape t-pixel">{site.name.toLowerCase()}’s files · 2024–26</span>
         </div>
+        <!-- the drawer's floor: only seen in the exploded view (home.ts, initDrawerScene) -->
+        <div class="drawer__tray" aria-hidden="true"><span class="t-mono">E · tray, holds the lot</span></div>
+      </div>
+
+      <!-- exploded-view callouts, drawn over the drawer while the scroll scene runs -->
+      <div class="xpl" data-xpl aria-hidden="true" hidden>
+        <svg class="xpl__wires">
+          {['a', 'b', 'c', 'd'].map((k) => <g data-wire={k}><polyline /><circle r="3.5" /></g>)}
+        </svg>
+        <p class="xpl__hud t-mono"><span class="t-accent">fig. 01</span> The archive, taken apart</p>
+        <p class="xpl__phase t-mono"><span data-xpl-phase>Closed</span><span class="t-pixel tnum" data-xpl-pct>000</span></p>
+        <div class="xpl__tag is-left" data-tag="a"><b class="t-pixel">A</b><span class="t-mono">Front panel</span><span>{site.name}’s files, 2024 to 26.</span></div>
+        <div class="xpl__tag is-left" data-tag="b"><b class="t-pixel">B</b><span class="t-mono">{N} hanging folders</span><span>Filed back to front.</span></div>
+        <div class="xpl__tag is-right" data-tag="c"><b class="t-pixel">C</b><span class="t-mono">{projects.length} case studies</span><span>Cleared to open. They lift out.</span></div>
+        <div class="xpl__tag is-right" data-tag="d"><b class="t-pixel">D</b><span class="t-mono">{fillerFolders.length} classified</span><span>Mine to keep.</span></div>
+        <p class="xpl__cue t-mono">Keep scrolling to open the drawer <span class="arr">↓</span></p>
       </div>
 
       <aside class="info win" aria-live="polite">
@@ -136,7 +152,7 @@ function folderPath(tx: number, tw: number) {
   .drawer__walls { position: absolute; left: 0; right: 0; top: 150px; bottom: 60px; width: 100%; height: calc(100% - 210px); overflow: visible; }
   .drawer__walls path { fill: none; stroke: var(--ink); stroke-width: 1.2; }
   .drawer__stack { list-style: none; padding: 0; position: relative; }
-  .folder { position: relative; width: var(--w); height: 150px; margin: -112px auto 0; transition: transform 0.5s var(--ease-out); }
+  .folder { position: relative; width: var(--w); height: 150px; margin: -112px auto 0; transition: translate 0.5s var(--ease-out); }
   .folder:first-child { margin-top: 0; }
   .folder__hit { position: absolute; inset: 0; display: block; outline: none; }
   .folder__shape { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; overflow: visible; }
@@ -156,17 +172,18 @@ function folderPath(tx: number, tw: number) {
     position: absolute; z-index: 1; width: min(300px, 56%); top: 36px; height: 110px;
     left: min(calc(var(--tx) - 2%), calc(100% - min(300px, 56%))); /* under its tab, but never past the folder's edge */
     background: var(--tint); border: 1px solid var(--ink); overflow: hidden;
-    transform: translateY(0); transition: transform 0.55s var(--ease-drawer);
+    transition: translate 0.55s var(--ease-drawer), rotate 0.55s var(--ease-drawer);
   }
   .folder__paper img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
   .folder__paper img.is-phone { width: 46%; margin-inline: auto; object-fit: cover; object-position: top; padding-top: 8px; }
 
-  .is-real:hover, .is-real:focus-within { transform: translateY(-26px); }
-  .is-real:hover .folder__paper, .is-real:focus-within .folder__paper { transform: translateY(-128px) rotate(-1.5deg); }
+  /* hover moves use the separate translate/rotate properties: `transform` belongs to the scroll scene */
+  .is-real:hover, .is-real:focus-within { translate: 0 -26px; }
+  .is-real:hover .folder__paper, .is-real:focus-within .folder__paper { translate: 0 -128px; rotate: -1.5deg; }
   .is-real:hover .folder__tabfill, .is-real:focus-within .folder__tabfill { fill: var(--accent); }
   .is-real:hover .folder__tab, .is-real:focus-within .folder__tab { color: var(--on-accent); }
   .is-real .folder__hit:focus-visible .folder__shape path:first-child { stroke-width: 2.4; }
-  .is-filler:hover { transform: translateY(-7px); }
+  .is-filler:hover { translate: 0 -7px; }
   .is-filler.is-nope { animation: nope 0.36s steps(6); }
   @keyframes nope { 25% { translate: -5px 0; } 50% { translate: 5px 0; } 75% { translate: -3px 0; } }
   .drawer.is-peeking .folder:not(.is-hot) .folder__shape path:first-child { stroke: var(--ink-3); }
@@ -180,6 +197,58 @@ function folderPath(tx: number, tw: number) {
   .drawer__front::before { content: ''; position: absolute; left: -1px; right: -1px; top: -14px; height: 14px; border: 1.3px solid var(--ink); border-bottom: 0; background: var(--bg); }
   .drawer__handle { width: 120px; height: 18px; border: 1.3px solid var(--ink); border-radius: 0 0 14px 14px; border-top: 0; margin-top: -40px; }
   .drawer__tape { position: absolute; bottom: 22px; padding: 5px 12px 4px; background: var(--accent); color: var(--on-accent); font-size: 13px; border: 1px solid var(--ink); transform: rotate(-1.2deg); }
+
+  /* ---------- the scroll scene (desktop): closed → open → exploded → filed ---------- */
+  .drawer-wrap { position: relative; }
+  .drawer {
+    --sx: 0; --sy: 0; --rx: 0; --ry: 0; --ss: 1; --oy: 50%;
+    transform-origin: 50% var(--oy) 0;
+  }
+  /* spin first, then tilt: the CSS order gives a camera that orbits, then looks down */
+  .drawer.is-staged {
+    transform: translate3d(calc(var(--sx) * 1px), calc(var(--sy) * 1px), 0) rotateX(calc(var(--rx) * 1deg)) rotateY(calc(var(--ry) * 1deg)) scale(var(--ss));
+  }
+  .drawer.is-scene, .drawer.is-scene .drawer__stack { transform-style: preserve-3d; }
+  .drawer.is-busy { pointer-events: none; }
+  /* the drawing is scaled down while it's apart: keep its lines from going hairline */
+  .drawer.is-scene .folder__shape path:first-child { stroke-width: 1.8; }
+  .drawer__tray {
+    position: absolute; left: 0; top: 0; width: 100%; height: 100px; opacity: 0; pointer-events: none;
+    transform-origin: 50% 0; border: 1.3px dashed var(--ink-2);
+    background: repeating-linear-gradient(90deg, transparent 0 39px, var(--line) 39px 40px);
+  }
+  .drawer__tray span { position: absolute; right: 12px; bottom: 10px; font-size: 11px; color: var(--ink-2); }
+  /* exploded: the five real folders go accent and push their paper up; the rest go quiet */
+  .drawer.is-x .is-real .folder__tabfill { fill: var(--accent); }
+  .drawer.is-x .is-real .folder__tab { color: var(--on-accent); }
+  .drawer.is-x .is-real .folder__paper { translate: 0 -104px; rotate: -1.5deg; }
+  .drawer.is-x .is-filler .folder__shape path { stroke: var(--ink-3); }
+  .drawer.is-x .is-filler .folder__tab { opacity: 0.5; }
+  .folder__tabfill, .folder__tab { transition: fill 0.35s, color 0.35s, opacity 0.35s; }
+
+  .xpl { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+  .xpl[hidden] { display: none; }
+  .xpl__wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .xpl__wires polyline { fill: none; stroke: var(--ink); stroke-width: 1; }
+  .xpl__wires circle { fill: var(--accent); stroke: var(--ink); stroke-width: 1; }
+  .xpl__wires g { opacity: 0; }
+  .xpl__hud, .xpl__phase, .xpl__cue { position: absolute; margin: 0; font-size: 11px; }
+  .xpl__hud { left: 0; }
+  .xpl__phase { right: 0; display: flex; gap: 14px; align-items: baseline; }
+  .xpl__phase .t-pixel { font-size: 28px; line-height: 0.8; color: var(--accent-ink); min-width: 3ch; text-align: right; }
+  .xpl__cue { left: 50%; translate: -50% 0; color: var(--ink-2); }
+  .xpl__tag {
+    position: absolute; width: 230px; display: grid; grid-template-columns: 30px 1fr; gap: 2px 12px;
+    opacity: 0; padding: 12px 14px; background: var(--bg); border: 1px solid var(--ink);
+  }
+  .xpl__tag.is-left { left: 0; }
+  .xpl__tag.is-right { right: 0; }
+  .xpl__tag b {
+    grid-row: 1 / 3; width: 30px; height: 30px; display: grid; place-items: center; font-weight: 400; font-size: 18px;
+    background: var(--accent); color: var(--on-accent); border: 1px solid var(--ink);
+  }
+  .xpl__tag .t-mono { font-size: 11px; color: var(--ink); }
+  .xpl__tag span:last-child { font-size: 14px; line-height: 1.35; color: var(--ink-2); }
 
   /* get info */
   .info { position: sticky; top: calc(var(--bar-h) + 24px); }

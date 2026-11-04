@@ -182,6 +182,8 @@ function initDrawer() {
       body?.setAttribute('data-view-current', b.dataset.view!);
       $$('[data-view]').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
       sfx.click();
+      // the list has no scene: drop the drawer's pin (and its scroll length) while it's hidden
+      if (scene) b.dataset.view === 'list' ? scene.disable(true) : scene.enable();
       ScrollTrigger.refresh();
     }),
   );
@@ -221,12 +223,197 @@ function initDrawer() {
     }),
   );
 
-  if (!reduced) {
+  const mm = gsap.matchMedia();
+  // a wide screen gets the whole scroll scene; a tablet's drawer just rises in
+  mm.add('(min-width: 1101px) and (prefers-reduced-motion: no-preference)', () => initDrawerScene(drawer));
+  mm.add('(max-width: 1100px) and (prefers-reduced-motion: no-preference)', () => {
     gsap.from($$('.folder', drawer), {
       y: 90, opacity: 0, duration: 0.9, ease: 'expo.out', stagger: 0.03,
       scrollTrigger: { trigger: drawer, start: 'top 75%', once: true },
     });
-  }
+  });
+}
+
+/* The drawer as an exploded product drawing, played by the scroll. Pinned, it goes:
+   closed (just the front panel) → the folders rise out of it → the camera orbits to a
+   three-quarter view and the parts pull apart along the drawer's depth, with callouts →
+   it files itself back together → slides into its column as Get Info arrives.
+   Everything is a pure function of one smoothed progress value, so scrubbing back and
+   forth (or a resize) can never leave a part stranded. */
+let scene: ScrollTrigger | null = null;
+
+function initDrawerScene(drawer: HTMLElement) {
+  const wrap = drawer.closest<HTMLElement>('.drawer-wrap')!;
+  const xpl = $('[data-xpl]', wrap)!;
+  const stack = $('.drawer__stack', drawer)!;
+  const folders = $$('.folder', drawer);
+  const real = folders.map((f) => f.classList.contains('is-real'));
+  const front = $('.drawer__front', drawer)!;
+  const walls = $<SVGElement>('.drawer__walls', drawer)!;
+  const tray = $('.drawer__tray', drawer)!;
+  const info = $('.info', wrap);
+  const hud = $('.xpl__hud', xpl)!;
+  const phaseEl = $('.xpl__phase', xpl)!;
+  const phase = $('[data-xpl-phase]', xpl)!;
+  const pct = $('[data-xpl-pct]', xpl)!;
+  const cue = $('.xpl__cue', xpl)!;
+  const tags = ['a', 'b', 'c', 'd'].map((k) => $(`[data-tag="${k}"]`, xpl)!);
+  const wires = ['a', 'b', 'c', 'd'].map((k) => {
+    const g = $<SVGGElement>(`[data-wire="${k}"]`, xpl)!;
+    return { g, line: g.querySelector('polyline')!, dot: g.querySelector('circle')! };
+  });
+  // what each callout points at: the front panel, the back folder, a real folder, a near filler
+  const N = folders.length;
+  const realIdx = real.map((r, i) => (r ? i : -1)).filter((i) => i >= 0);
+  const fillIdx = real.map((r, i) => (r ? -1 : i)).filter((i) => i >= 0);
+  const targets = [
+    front,
+    $('.folder__tab', folders[1])!,
+    $('.folder__tab', folders[realIdx[Math.floor(realIdx.length / 2)]])!,
+    $('.folder__tab', folders[fillIdx[fillIdx.length - 3]])!,
+  ];
+  const slots = [0.74, 0.2, 0.24, 0.7]; // callouts' heights, as a share of the visible stage
+
+  const GAP = 46, LIFT = 64, RX = -28, RY = 30, SS = 0.56;
+  const mid = (N - 1) / 2;
+  const io = gsap.parseEase('power3.inOut');
+  const out = gsap.parseEase('power2.out');
+  const seg = (u: number, a: number, b: number) => Math.min(1, Math.max(0, (u - a) / (b - a)));
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+  // geometry, re-read on every refresh (layout offsets ignore transforms, so this is safe mid-scene)
+  const g = { barH: 36, avail: 800, off: 0, top: 0, vc: 400, tops: [] as number[], C: 0, fTop: 0, fC: 0, dx: 0, zB: 0, zF: 0 };
+  const measure = () => {
+    g.barH = parseFloat(cssVar('--bar-h')) || 36;
+    g.avail = innerHeight - g.barH - 28; // between the menu bar and the status bar
+    // when the drawer is taller than the stage, crop its empty top margin first
+    g.off = Math.max(0, Math.min(140, wrap.offsetHeight - g.avail));
+    g.top = g.barH - g.off + drawer.offsetTop; // the drawer's top on screen while pinned
+    g.vc = g.barH + g.avail / 2;
+    g.tops = folders.map((f) => stack.offsetTop + f.offsetTop);
+    g.C = g.tops.reduce((a, b) => a + b, 0) / N + 75; // the exploded row's centre line
+    g.fTop = front.offsetTop;
+    g.fC = g.fTop + front.offsetHeight / 2;
+    const wr = wrap.getBoundingClientRect();
+    g.dx = innerWidth / 2 - (wr.left + drawer.offsetLeft + drawer.offsetWidth / 2);
+    g.zB = -mid * GAP - 70;
+    g.zF = (N - 1 - mid) * GAP + 110;
+    drawer.style.setProperty('--oy', `${g.C}px`);
+    tray.style.height = `${g.zF + 40 - g.zB}px`;
+  };
+
+  let last = -1;
+  const render = (p: number) => {
+    if (p === last) return;
+    last = p;
+    const u = p * 10;
+    const o = io(seg(u, 0.3, 2.6)); // open: closed → assembled
+    const x = io(seg(u, 2.4, 4.6)) - io(seg(u, 6.4, 8.6)); // exploded amount, up and back down
+    const d = io(seg(u, 8.5, 9.7)); // docked into its column
+    const spin = (seg(u, 2.4, 8.6) - 0.5) * -14 * x; // a slow orbit while it's apart, so it never sits dead
+
+    const closedY = g.vc - (g.top + g.fC);
+    const explY = g.vc - (g.top + g.C);
+    drawer.style.setProperty('--sx', (g.dx * (1 - d)).toFixed(2));
+    drawer.style.setProperty('--sy', lerp(lerp(closedY, 0, o), explY, x).toFixed(2));
+    drawer.style.setProperty('--rx', (RX * x).toFixed(3));
+    drawer.style.setProperty('--ry', (RY * x + spin).toFixed(3));
+    drawer.style.setProperty('--ss', lerp(1, SS, x).toFixed(4));
+    drawer.classList.toggle('is-scene', u > 2.3 && u < 8.7);
+    drawer.classList.toggle('is-x', u > 3.9 && u < 7);
+    drawer.classList.toggle('is-busy', u < 9.8);
+
+    folders.forEach((f, i) => {
+      // front folders lift out of the drawer first, the back ones travel furthest
+      const a = 0.3 + (N - 1 - i) * 0.045;
+      const oi = io(seg(u, a, a + 1.2));
+      const closed = g.fTop + 10 - g.tops[i];
+      const row = g.C - 75 - g.tops[i] - (real[i] ? LIFT : 0);
+      const y = lerp(closed, 0, oi) + row * x;
+      const z = (i - mid) * GAP * x;
+      f.style.transform = `translate3d(0, ${y.toFixed(2)}px, ${z.toFixed(2)}px)`;
+      f.style.opacity = String(Math.min(1, oi * 3));
+    });
+    front.style.transform = `translate3d(0, ${((g.C + 40 - g.fC) * x).toFixed(2)}px, ${(g.zF * x).toFixed(2)}px)`;
+    // the sides arrive once the folders are up, and leave as soon as the camera starts to turn
+    walls.style.opacity = String(seg(u, 1.8, 2.6) * (1 - Math.min(1, x * 5)));
+    tray.style.opacity = String(x);
+    tray.style.transform = `translate3d(0, ${(g.C + 75).toFixed(2)}px, ${(g.zB * x).toFixed(2)}px) rotateX(90deg) scaleY(${Math.max(0.001, x).toFixed(4)})`;
+    if (info) {
+      info.style.opacity = String(d);
+      info.style.transform = `translateX(${(60 * (1 - d)).toFixed(2)}px)`;
+    }
+
+    // the drawing's furniture: title, phase readout, the first nudge, the callouts
+    const furniture = 1 - d;
+    const wr = wrap.getBoundingClientRect();
+    hud.style.opacity = phaseEl.style.opacity = String(furniture);
+    hud.style.top = phaseEl.style.top = `${g.barH + 18 - wr.top}px`;
+    cue.style.opacity = String(1 - seg(u, 0.1, 0.8));
+    cue.style.top = `${g.barH + g.avail - 34 - wr.top}px`;
+    phase.textContent = u < 0.3 ? 'Closed' : u < 2.6 ? 'Opening' : u < 4.6 ? 'Taking it apart' : u < 6.4 ? 'Exploded view' : u < 8.6 ? 'Filing it back' : 'Filed';
+    pct.textContent = String(Math.round(p * 100)).padStart(3, '0');
+
+    tags.forEach((tag, k) => {
+      const t = out(seg(u, 4 + k * 0.22, 4.6 + k * 0.22)) * (1 - seg(u, 6.2, 6.7));
+      tag.style.opacity = String(t);
+      tag.style.translate = `${(tag.classList.contains('is-left') ? -16 : 16) * (1 - t)}px 0`;
+      const w = wires[k];
+      w.g.style.opacity = String(t);
+      if (t <= 0) return;
+      const top = g.barH + g.avail * slots[k] - wr.top - tag.offsetHeight / 2;
+      tag.style.top = `${top.toFixed(1)}px`;
+      const r = targets[k].getBoundingClientRect();
+      const left = tag.classList.contains('is-left');
+      const tx = (k === 0 ? r.left + r.width * 0.12 : r.left + r.width / 2) - wr.left;
+      const ty = r.top + r.height / 2 - wr.top;
+      const sx = left ? tag.offsetWidth + 10 : wrap.offsetWidth - tag.offsetWidth - 10;
+      const sy = top + 22;
+      const ex = sx + (left ? 28 : -28);
+      // the wire draws itself from the callout towards the part
+      const fx = lerp(ex, tx, t), fy = lerp(sy, ty, t);
+      w.line.setAttribute('points', `${sx},${sy} ${ex},${sy} ${fx.toFixed(1)},${fy.toFixed(1)}`);
+      w.dot.setAttribute('cx', fx.toFixed(1));
+      w.dot.setAttribute('cy', fy.toFixed(1));
+    });
+  };
+
+  xpl.hidden = false;
+  drawer.classList.add('is-staged');
+  measure();
+  const proxy = { p: 0 };
+  const tween = gsap.to(proxy, {
+    p: 1,
+    ease: 'none',
+    onUpdate: () => render(proxy.p),
+    scrollTrigger: {
+      trigger: wrap,
+      start: () => `top+=${g.off} ${g.barH}px`,
+      end: () => `+=${Math.round(innerHeight * 3.2)}`,
+      pin: true,
+      scrub: 0.9,
+      anticipatePin: 1,
+      refreshPriority: 2, // created before the reveals and pins below it: measure it first
+      onRefreshInit: measure,
+      onRefresh: () => { last = -1; render(proxy.p); },
+    },
+  });
+  scene = tween.scrollTrigger!;
+  render(0);
+  ScrollTrigger.sort();
+  ScrollTrigger.refresh();
+
+  return () => {
+    scene = null;
+    tween.scrollTrigger?.kill();
+    tween.kill();
+    xpl.hidden = true;
+    drawer.classList.remove('is-staged', 'is-scene', 'is-x', 'is-busy');
+    for (const el of [...folders, front, tray, walls as unknown as HTMLElement, ...(info ? [info] : [])]) {
+      el.style.transform = '';
+      el.style.opacity = '';
+    }
+  };
 }
 
 function initList() {
